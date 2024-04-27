@@ -1,3 +1,5 @@
+import math
+
 import pyhopper
 import torch
 import torch.nn as nn
@@ -17,8 +19,6 @@ def train(params):
 
     pool_size = []
 
-    params["date_time"] = datetime.now().strftime("%d/%m/%Y %H:%M:%S")
-
     for counter in range(setting.number_of_convolutional_layers):
         if setting.out_channels[counter] < setting.pool_size[counter]:
             setting.pool_size[counter] = setting.out_channels[counter]
@@ -32,11 +32,6 @@ def train(params):
 
         if setting.kernel_size[counter] < setting.kernel_stride[counter]:
             setting.kernel_stride[counter] = setting.kernel_size[counter]
-
-    file = open("C:\\Users\\User\\OneDrive\\tuks\\master\\code\\logs.json", "a")
-    file.write(str(params) + ",")
-    file.write("\n")
-    file.close()
 
     testing_accuracy = 0
 
@@ -55,7 +50,7 @@ def train(params):
                       setting.pool_type,
                       setting.number_of_hidden_layers,
                       setting.number_of_neurons_in_layers,
-                      setting.output_size
+                      setting.output_size,
                       )
 
         if torch.cuda.is_available():
@@ -65,7 +60,7 @@ def train(params):
             y_training = y_training.cuda(device=0)
 
         criterion = nn.CrossEntropyLoss()
-        optimizer = optim.SGD(network.parameters(), lr=setting.learning_rate, momentum=setting.momentum, weight_decay= params["weight_decay"])
+        optimizer = optim.SGD(network.parameters(), lr=setting.learning_rate, momentum=setting.momentum)
 
         train_dataset = CustomDataset(x_training, y_training)
 
@@ -99,13 +94,17 @@ def train(params):
         total_samples = y_testing.shape[0]
         testing_accuracy += correct_predictions / total_samples * 100
 
+
+        if epoch%params["prune_epoch_interval"] == 0 and epoch > 0:
+            network.prune(amount=params["prune_amount"])
+
     return testing_accuracy / setting.number_of_fold
 
 
 datasets = ["Balls",
             "BeanLeafs",
-            # "Cifar10",
-            # "MNIST",
+            "Cifar10",
+            "MNIST",
             "Shoes"]
 names = "0.\t exit\n"
 counter = 1
@@ -115,24 +114,28 @@ for dataset in datasets:
 names += str(counter) + ".\t All\n"
 
 while True:
-    nameIndex = int(input("Please select a dataset's name by enter a number:\n" + names))
-    if nameIndex == 0:
+    nameIndexes = input("Please select a dataset's name by enter a number:\n" + names).split(" ")
+    if "0" in nameIndexes:
         break
     datasetNames = []
-    if nameIndex == 4:
+    if "6" in nameIndexes:
         datasetNames = datasets
     else:
-        datasetNames.append(datasets[nameIndex - 1])
+        for index in nameIndexes:
+            datasetNames.append(datasets[int(index) - 1])
     for dataset in datasetNames:
         trainSet, validationSet, setting = loadImagesDatasSet(dataset, False)
         search = pyhopper.Search({
-            "weight_decay": pyhopper.float(0, 0.99),
+            "prune_amount": pyhopper.float(0.001, 0.999),
+            "prune_epoch_interval": pyhopper.int(2, math.floor(setting.number_of_epochs / 4))
         })
         best_params = search.run(
             train,
             direction="max",
-            runtime="12h",
+            steps=150,
             n_jobs="per-gpu",
+            checkpoint_path= "Results/optimiserCheckpoints/",
+            overwrite_checkpoint=True
         )
         test_acc = train(best_params)
         print(f"Tuned params test {dataset} accuracy: {test_acc:0.2f}%")

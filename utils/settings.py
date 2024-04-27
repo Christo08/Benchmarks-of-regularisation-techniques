@@ -117,9 +117,7 @@ class RainInAustraliaSettings:
     dropout_layer = [0.47023132, 0.2833416, 0.44631075, 0.400374, 0.47384847, 0.59316255, 0.47270801]
     learning_rate = 0.06946966889993425
     log_interval = 35
-    number_of_neurons_in_layers = [550, 850, 700, 800, 800, 600, 550, 800, 750, 900, 750, 750, 650, 850, 850, 750, 750,
-                                   700, 600,
-                                   650]
+    number_of_neurons_in_layers = [550, 850, 700, 800, 800, 600, 550, 800, 750, 900]
     number_of_hidden_layers = 7
     momentum = 0.5
     number_of_epochs = 350
@@ -276,7 +274,7 @@ class BeanLeafSettings:
     # second
     rotation = 0
     dropout_layer = [0.5, 0.25, 0.1, 0.1, 0.25, 0.4, 0.3, 0.05]
-    weight_decay = 0.25
+    weight_decay = 0.0025621157653690566
     prune_amount = 0.07553485715290663
     prune_epoch_interval = 38
     weight_perturbation_amount = 0.001

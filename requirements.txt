@@ -1,0 +1,11 @@
+torch>=2.1.2+cu121
+scikit-learn>=1.1.2
+torchvision>=0.16.2+cu121
+imblearn>=0.0
+pandas>=2.1.4
+matplotlib>=3.5.3
+pmlb>=1.0.1.post3
+scipy>=1.11.4
+numpy>=1.25.2
+pyhopper>=1.2.3
+future>=1.0.0
