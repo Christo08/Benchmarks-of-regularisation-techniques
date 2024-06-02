@@ -2,115 +2,82 @@ import random
 import time
 
 import torch
-import torch.nn as nn
+import torch.optim as optim
 from sklearn.model_selection import KFold
-from torch import optim
 from torch.utils.data import DataLoader
 
 from NNs.Images.basicCNN import Net
-from utils.CustomDataset import CustomDataset
-from utils.run_logger import create_numeric_run_object
+from utils.customDataset import CustomDataset
+from utils.dataLoader import clean_labels
+from utils.lossFucntions import CustomCrossEntropyLoss
+from utils.monitor import Monitor
 
 
-def run(datasetName, dataset, setting):
-    print(datasetName+" baseline")
+def run(dataset_name, settings, training_set, validation_set):
+    print(dataset_name + " baseline run")
     seed = random.randint(1, 100000)
+    print("Random Seed: ", seed)
+
     torch.manual_seed(seed)
 
-    # Create KFold cross-validator
-    kf = KFold(n_splits=setting.number_of_fold, shuffle=True, random_state=seed)
-    fold = 1
+    labels = training_set[1]
+    features_tensor = training_set[0]
+    number_of_outputs = len(labels.unique().tolist())
+    labels_tensor = clean_labels(labels, number_of_outputs)
 
-    training_accuracies = []
-    testing_accuracies = []
-    difference_in_accuracies = []
+    x_validation = validation_set[0]
+    y_validation = clean_labels(validation_set[1], number_of_outputs)
 
-    if datasetName == 'MNIST':
-        data, labels = torch.tensor(dataset.data),  torch.tensor(dataset.targets)
-        data = data.unsqueeze(1)
-    elif datasetName == "Cifar-10":
-        data, labels = torch.tensor(dataset.data),  torch.tensor(dataset.targets)
-        data = data.permute(0, 3, 1, 2)
-    else:
-        dataArray =[]
-        labelsArray = []
-        for datapoint, label in dataset:
-            dataArray.append(datapoint)
-            labelsArray.append(label)
-        data = torch.stack(dataArray)
-        labels = torch.tensor(labelsArray)
+    if torch.cuda.is_available():
+        features_tensor = features_tensor.cuda()
+        labels_tensor = labels_tensor.cuda()
+        x_validation = x_validation.cuda()
+        y_validation = y_validation.cuda()
+
+    kf = KFold(n_splits=settings.number_of_fold, shuffle=True, random_state=seed)
+
+    loss_function = CustomCrossEntropyLoss()
+
+    monitor = Monitor("Baseline", dataset_name, seed, loss_function, settings.log_interval, x_validation, y_validation)
+
     start_time = time.time()
 
-    for train_indices, val_indices in kf.split(data):
+    for fold, (train_index, test_index) in enumerate(kf.split(features_tensor)):
         # Initialize the network, optimizer, and loss function
-        x_training, y_training = data[train_indices], labels[train_indices]
-        x_testing, y_testing = data[train_indices], labels[train_indices]
-
-        if torch.cuda.is_available():
-            torch.cuda.empty_cache()
-            x_testing = x_testing.cuda().float()
-            x_training = x_training.cuda().float()
-            y_testing = y_testing.cuda()
-            y_training = y_training.cuda()
+        x_training, x_testing = features_tensor[train_index], features_tensor[test_index]
+        y_training, y_testing = labels_tensor[train_index], labels_tensor[test_index]
 
         train_dataset = CustomDataset(x_training, y_training)
 
-        train_loader = DataLoader(train_dataset, batch_size=setting.batch_size, shuffle=True)
+        train_loader = DataLoader(train_dataset, batch_size=settings.batch_size, shuffle=True)
 
-        network = Net(setting.in_channels, setting.out_channels, setting.kernel_size, setting.pool_size, setting.hidden_layer_sizes, setting.output_size, setting.stride)
+        network = Net(in_channels=settings.in_channels,
+                      number_of_convolutional_layers=settings.number_of_convolutional_layers,
+                      out_channels=settings.out_channels,
+                      kernel_size=settings.kernel_size,
+                      kernel_stride=settings.kernel_stride,
+                      pool_size=settings.pool_size,
+                      pool_type=settings.pool_type,
+                      number_of_hidden_layers=settings.number_of_hidden_layers,
+                      number_of_neurons_in_layers=settings.number_of_neurons_in_layers,
+                      output_size=number_of_outputs)
         if torch.cuda.is_available():
-            network=network.cuda()
+            network = network.cuda()
 
-        # Define loss function and optimizer
-        criterion = nn.CrossEntropyLoss()
-        optimizer = optim.SGD(network.parameters(), lr=setting.learning_rate, momentum=setting.momentum)
+        optimizer = optim.SGD(network.parameters(), lr=settings.learning_rate, momentum=settings.momentum)
 
-        for epoch in range(setting.number_of_epochs):
+        for epoch in range(settings.number_of_epochs):
             for batch in train_loader:
                 network.train()
                 training_outputs = network(batch['data'])
-                training_loss = criterion(training_outputs, batch['label'])
+                training_loss = loss_function(training_outputs, batch['label'])
 
                 optimizer.zero_grad()
                 training_loss.backward()
                 optimizer.step()
 
-            training_outputs = network(x_training)
-            training_loss = criterion(training_outputs, y_training)
 
-            testing_output = network(x_testing)
-            testing_loss = criterion(testing_output, y_testing)
-
-            _, predicted_labels = torch.max(training_outputs, 1)
-            correct_predictions = (predicted_labels == y_training).sum().item()
-            total_samples = y_training.shape[0]
-            training_accuracy = correct_predictions / total_samples * 100
-
-            _, predicted_labels = torch.max(testing_output, 1)
-            correct_predictions = (predicted_labels == y_testing).sum().item()
-            total_samples = y_testing.shape[0]
-            testing_accuracy = correct_predictions / total_samples * 100
-
-            if fold == 1:
-                training_accuracies.append(training_accuracy)
-                testing_accuracies.append(testing_accuracy)
-                difference_in_accuracies.append(training_accuracy - testing_accuracy)
-            else:
-                training_accuracies[epoch] += training_accuracy
-                testing_accuracies[epoch] += testing_accuracy
-                difference_in_accuracies[epoch] += (training_accuracy - testing_accuracy)
-
-            if epoch % setting.log_interval == 0:
-                print("Fold %s, Epoch %s, Training loss %s, Testing loss %s, Training accuracy %s, Testing accuracy %s" % (fold, epoch, training_loss.item(), testing_loss.item(),training_accuracy,testing_accuracy))
-
-        fold +=1
-
-    for epoch in range(len(training_accuracies)):
-        training_accuracies[epoch] /= setting.number_of_fold
-        testing_accuracies[epoch] /= setting.number_of_fold
-        difference_in_accuracies[epoch] /= setting.number_of_fold
     end_time = time.time()
     print('Finished Training')
 
-    return create_numeric_run_object("LeakyReLU Activation Function", seed, start_time, end_time, setting,
-                                     training_accuracies, testing_accuracies, difference_in_accuracies)
+    return monitor.log_performance(start_time, end_time, settings)

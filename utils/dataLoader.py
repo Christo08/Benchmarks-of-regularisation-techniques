@@ -6,18 +6,23 @@ import numpy as np
 import pandas as pd
 import torch
 import torchvision
+from pandas import Series
 
 from utils.settings import MNISTSettings, BallsSettings, BeanLeafSettings, ShoesSettings, CifarSettings, \
-    MagicSettings, WhiteWineQualitySettings, MfeatPixelSettings, RainInAustraliaSettings, DiabetesSettings
+    MagicSettings, WhiteWineQualitySettings, MfeatPixelSettings, RainInAustraliaSettings, DiabetesSettings, \
+    LiverCirrhosisSettings
 
-def loadNumericDataSet(datasetName):
-    if datasetName == 'Diabetes':
+
+def loadNumericDataSet(dataset_name):
+    if dataset_name == 'Diabetes':
         setting = DiabetesSettings()
-    elif datasetName == 'Magic':
+    elif dataset_name == 'LiverCirrhosis':
+        setting = LiverCirrhosisSettings()
+    elif dataset_name == 'Magic':
         setting = MagicSettings()
-    elif datasetName == 'MfeatPixel':
+    elif dataset_name == 'MfeatPixel':
         setting = MfeatPixelSettings()
-    elif datasetName == 'RainInAustralia':
+    elif dataset_name == 'RainInAustralia':
         setting = RainInAustraliaSettings()
     else:
         setting = WhiteWineQualitySettings()
@@ -26,59 +31,55 @@ def loadNumericDataSet(datasetName):
     dataset = pd.read_csv(setting.path_to_data)
     labels = dataset.get('target')
     features = dataset.drop('target', axis=1)
-    if not validationSetJson[datasetName]["validation"]:
+    if not validationSetJson[dataset_name]["validation"]:
         seed = random.randint(1, 100000)
-        validationSetJson[datasetName]["validation"],validationSetJson[datasetName]["train"] = createValidationSetIndex(labels,seed)
+        validationSetJson[dataset_name]["validation"], validationSetJson[dataset_name][
+            "train"] = createValidationSetIndex(labels, seed)
         with open('C:\\Users\\User\\OneDrive\\tuks\\master\\code\\Data\\validationSet.json', 'w') as json_file:
             json.dump(validationSetJson, json_file, indent=4)
-    validationSet = (features.iloc[validationSetJson[datasetName]["validation"]], labels[validationSetJson[datasetName]["validation"]])
-    trainSet = (features.iloc[validationSetJson[datasetName]["train"]], labels[validationSetJson[datasetName]["train"]])
+    validation_set = (
+        features.iloc[validationSetJson[dataset_name]["validation"]],
+        labels[validationSetJson[dataset_name]["validation"]])
+    training_set = (features.iloc[validationSetJson[dataset_name]["train"]], labels[validationSetJson[dataset_name]["train"]])
 
-    return trainSet, validationSet, setting
+    return training_set, validation_set, setting
 
 
-def loadImagesDatasSet(datasetName, rotation):
-    if datasetName == 'Balls':
+def loadImagesDatasSet(dataset_name):
+    if dataset_name == 'Balls':
         setting = BallsSettings()
-    elif datasetName == 'BeanLeafs':
+    elif dataset_name == 'BeanLeafs':
         setting = BeanLeafSettings()
-    elif datasetName == 'Cifar10':
+    elif dataset_name == 'Cifar10':
         setting = CifarSettings()
-    elif datasetName == 'MNIST':
+    elif dataset_name == 'MNIST':
         setting = MNISTSettings()
     else:
         setting = ShoesSettings()
 
-    if(rotation):
-        transform = torchvision.transforms.Compose([
-            torchvision.transforms.RandomRotation(setting.rotation),
-            torchvision.transforms.Resize(setting.image_size),  # Resize the image
-            torchvision.transforms.ToTensor(),
-            torchvision.transforms.Normalize(setting.mean, setting.std)
-        ])
-    else:
-        transform = torchvision.transforms.Compose([
-            torchvision.transforms.Resize(setting.image_size),  # Resize the image
-            torchvision.transforms.ToTensor(),
-            torchvision.transforms.Normalize(setting.mean, setting.std)
-        ])
-    if datasetName == 'Cifar10':
+    transform = torchvision.transforms.Compose([
+        torchvision.transforms.Resize(setting.image_size),  # Resize the image
+        torchvision.transforms.ToTensor(),
+        torchvision.transforms.Normalize(setting.mean, setting.std)
+    ])
+
+    if dataset_name == 'Cifar10':
         dataset = torchvision.datasets.CIFAR10(root=setting.path_to_data, download=True, transform=transform)
-    elif datasetName == 'MNIST':
+    elif dataset_name == 'MNIST':
         dataset = torchvision.datasets.MNIST(root=setting.path_to_data, download=True, transform=transform)
     else:
         dataset = torchvision.datasets.ImageFolder(root=setting.path_to_data, transform=transform)
     with open('C:\\Users\\User\\OneDrive\\tuks\\master\\code\\Data\\validationSet.json', 'r') as file:
         validationSetJson = json.load(file)
 
-    if datasetName == 'MNIST':
-        data, labels = torch.tensor(dataset.data),  torch.tensor(dataset.targets)
+    if dataset_name == 'MNIST':
+        data, labels = torch.tensor(dataset.data), torch.tensor(dataset.targets)
         features = data.unsqueeze(1)
-    elif datasetName == "Cifar10":
-        data, labels = torch.tensor(dataset.data),  torch.tensor(dataset.targets)
+    elif dataset_name == "Cifar10":
+        data, labels = torch.tensor(dataset.data), torch.tensor(dataset.targets)
         features = data.permute(0, 3, 1, 2)
     else:
-        dataArray =[]
+        dataArray = []
         labelsArray = []
         for datapoint, label in dataset:
             dataArray.append(datapoint)
@@ -86,22 +87,23 @@ def loadImagesDatasSet(datasetName, rotation):
         features = torch.stack(dataArray)
         labels = torch.tensor(labelsArray)
 
-    if not validationSetJson[datasetName]["validation"]:
+    if not validationSetJson[dataset_name]["validation"]:
         seed = random.randint(1, 100000)
-        validationSetJson[datasetName]["validation"],validationSetJson[datasetName]["train"] = createValidationSetIndex(labels.tolist(),seed)
+        validationSetJson[dataset_name]["validation"], validationSetJson[dataset_name][
+            "train"] = createValidationSetIndex(labels.tolist(), seed)
         with open('C:\\Users\\User\\OneDrive\\tuks\\master\\code\\Data\\validationSet.json', 'w') as json_file:
             json.dump(validationSetJson, json_file, indent=4)
 
-    validationIndex = torch.tensor(validationSetJson[datasetName]["validation"])
-    validationSet = (torch.index_select(features, 0, validationIndex), torch.index_select(labels, 0, validationIndex))
+    validationIndex = torch.tensor(validationSetJson[dataset_name]["validation"])
+    validation_set = (torch.index_select(features, 0, validationIndex), torch.index_select(labels, 0, validationIndex))
 
-    trainIndex = torch.tensor(validationSetJson[datasetName]["train"])
-    trainSet = (torch.index_select(features, 0, trainIndex), torch.index_select(labels, 0, trainIndex))
+    trainIndex = torch.tensor(validationSetJson[dataset_name]["train"])
+    training_set = (torch.index_select(features, 0, trainIndex), torch.index_select(labels, 0, trainIndex))
 
-    return trainSet, validationSet, setting
+    return training_set, validation_set, setting
 
 
-def createValidationSetIndex(labels, random_seed, validation_percent = 0.1):
+def createValidationSetIndex(labels, random_seed, validation_percent=0.1):
     class_distribution = defaultdict(list)
     for counter, label in enumerate(labels):
         class_distribution[label].append(counter)
@@ -119,3 +121,15 @@ def createValidationSetIndex(labels, random_seed, validation_percent = 0.1):
         validation_indices.extend(indices[:num_validation])
 
     return validation_indices, test_indices
+
+
+def clean_labels(targets, num_classes):
+    if isinstance(targets, Series):
+        targets = torch.tensor(targets.values)
+    targets = targets.to(torch.int64)
+    num_samples = targets.size(0)
+
+    output_tensor = torch.zeros(num_samples, num_classes)
+    output_tensor.scatter_(1, targets.unsqueeze(1), 1)
+    output_tensor = output_tensor.to(torch.float)
+    return output_tensor

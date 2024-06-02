@@ -37,9 +37,9 @@ class Net(nn.Module):
 
             cnn_layers.append(conv_layer)
             if pool_type[counter] == 0:
-                cnn_layers.append(nn.AdaptiveMaxPool2d(pool_size[counter]))
+                cnn_layers.append(nn.AdaptiveMaxPool2d((pool_size[counter],pool_size[counter])))
             else:
-                cnn_layers.append(nn.AdaptiveAvgPool2d(pool_size[counter]))
+                cnn_layers.append(nn.AdaptiveAvgPool2d((pool_size[counter],pool_size[counter])))
 
             if batch_norm:
                 cnn_layers.append(nn.BatchNorm2d(out_channels[counter]))
@@ -55,7 +55,7 @@ class Net(nn.Module):
 
         self.cnn_layers = nn.Sequential(*cnn_layers)
 
-        input_size = (out_channels[number_of_convolutional_layers - 1] * pool_size[number_of_convolutional_layers - 1][0] * pool_size[number_of_convolutional_layers - 1][1])
+        input_size = (out_channels[number_of_convolutional_layers - 1] * pool_size[number_of_convolutional_layers - 1] * pool_size[number_of_convolutional_layers - 1])
         layers = []
         input_layer = nn.Linear(in_features=input_size, out_features=number_of_neurons_in_layers[0])
         if weight_norm:
@@ -95,6 +95,7 @@ class Net(nn.Module):
                 dropout_index += 1
         # Add the output layer
         layers.append(nn.Linear(number_of_neurons_in_layers[number_of_hidden_layers - 1], output_size))
+        layers.append(nn.Softmax(dim=1))
         self.layers = nn.Sequential(*layers)
 
     def forward(self, out):

@@ -23,6 +23,8 @@ if __name__ == '__main__':
                 "Cifar-10",
                 "Diabetes",
                 "Gametes Epistasis",
+                "Healthcare",
+                "Liver Cirrhosis",
                 "Magic",
                 "mfeat_pixel",
                 "MNSIT",
@@ -113,6 +115,21 @@ if __name__ == '__main__':
             gametesDataset.drop([0])
             gametesDataset.to_csv('Data/Numeric/Gametes/cleanedData.csv', sep=',', index=False, encoding='utf-8')
             print(gametesDataset)
+        elif dataset == "Healthcare":
+            healthcareDataSet = pd.read_csv(
+                'C:\\Users\\User\\OneDrive\\tuks\\master\\code\\Data\\Numeric\\Healthcare\\healthcare_dataset.csv')
+
+            for column in healthcareDataSet.columns:
+                if column == "Age" or column == "Billing Amount" or column == "Room Number":
+                    healthcareDataSet[column] = zscore(healthcareDataSet[column])
+                else:
+                    healthcareDataSet[column] = healthcareDataSet[column].astype('category')
+                    healthcareDataSet[column] = healthcareDataSet[column].cat.codes
+            healthcareDataSet.rename(columns={'Test Results': 'target'}, inplace=True)
+            healthcareDataSet.to_csv(
+                'C:\\Users\\User\\OneDrive\\tuks\\master\\code\\Data\\Numeric\\Healthcare\\cleanedData.csv',
+                sep=',', index=False,
+                encoding='utf-8')
         elif dataset == "Magic":
             magicDataSet = fetch_data('magic')
             magicDataSet = magicDataSet.drop(magicDataSet.columns[0], axis=1)
@@ -139,7 +156,25 @@ if __name__ == '__main__':
             diabetesDataSet = pd.read_csv(
                 '../Data/Numeric/DiabetesHealthIndicators/diabetes_binary_5050split_health_indicators_BRFSS2015.csv')
             diabetesDataSet.rename(columns={'Diabetes_binary': 'target'}, inplace=True)
-            diabetesDataSet.to_csv('Data/Numeric/DiabetesHealthIndicators/cleanedData.csv', sep=',', index=False, encoding='utf-8')
+            diabetesDataSet.to_csv('Data/Numeric/DiabetesHealthIndicators/cleanedData.csv', sep=',', index=False,
+                                   encoding='utf-8')
+        elif dataset == "Liver Cirrhosis":
+            liverCirrhosisDataSet = pd.read_csv('C:\\Users\\User\\OneDrive\\tuks\\master\\code\\Data\\Numeric\\Liver '
+                                                'Cirrhosis\\liver_cirrhosis.csv')
+            for column in liverCirrhosisDataSet.columns:
+                print(column, type(column))
+                if (column == "Status" or column == "Drug" or column == "Sex" or column == "Stage" or
+                        column == "Ascites" or column == "Hepatomegaly" or column == "Spiders" or column == "Edema"):
+                    liverCirrhosisDataSet[column] = liverCirrhosisDataSet[column].astype('category')
+                    liverCirrhosisDataSet[column] = liverCirrhosisDataSet[column].cat.codes
+                else:
+                    liverCirrhosisDataSet[column] = zscore(liverCirrhosisDataSet[column])
+
+            liverCirrhosisDataSet.rename(columns={'Stage': 'target'}, inplace=True)
+            liverCirrhosisDataSet.to_csv(
+                'C:\\Users\\User\\OneDrive\\tuks\\master\\code\\Data\\Numeric\\Liver Cirrhosis\\cleanedData.csv',
+                sep=',', index=False,
+                encoding='utf-8')
         elif dataset == "MNSIT":
             print("")
         elif dataset == "Mofn":
@@ -171,12 +206,15 @@ if __name__ == '__main__':
             solarDataSet['target'] = solarDataSet['target'].cat.codes
             solarDataSet.to_csv("Data/Numeric/Solar Flares/cleanedData.csv", sep=',', index=False, encoding='utf-8')
         elif dataset == "Rain in Australia":
-            rainDataSet = pd.read_csv('../Data/Numeric/Rain in Australia/weatherAUS.csv')
+            rainDataSet = pd.read_csv(
+                'C:\\Users\\User\\OneDrive\\tuks\\master\\code\\Data\\Numeric\\Rain in Australia\\weatherAUS.csv')
             rainDataSet = rainDataSet.drop(columns=["Date"])
 
+            rows_to_remove = rainDataSet[rainDataSet['RainTomorrow'].isna()]
+            rainDataSet = rainDataSet.drop(rows_to_remove.index)
+
             columns_with_nan = rainDataSet.columns[rainDataSet.isna().any()].tolist()
-            print(columns_with_nan)
-            rainDataSet = rainDataSet.fillna(-1)
+            rainDataSet.fillna(-1, inplace=True)
 
             rainDataSet['Location'] = rainDataSet['Location'].astype('category')
             rainDataSet['Location'] = rainDataSet['Location'].cat.codes
@@ -202,15 +240,17 @@ if __name__ == '__main__':
 
             for column in rainDataSet.columns:
                 if (column != "Location" and
-                   column != "WindGustDir" and
-                   column != "WindDir9am" and
-                   column !="WindDir3pm" and
-                   column != "RainToday" and
-                   column != "target"):
+                        column != "WindGustDir" and
+                        column != "WindDir9am" and
+                        column != "WindDir3pm" and
+                        column != "RainToday" and
+                        column != "target"):
+                    rainDataSet[column].fillna(rainDataSet[column].mean(), inplace=True)
                     rainDataSet[column] = zscore(rainDataSet[column])
-            rainDataSet.to_csv('Data/Numeric/Rain in Australia/cleanedData.csv', sep=',', index=False,
-                                    encoding='utf-8')
-
+            rainDataSet.to_csv(
+                'C:\\Users\\User\\OneDrive\\tuks\\master\\code\\Data\\Numeric\\Rain in Australia\\cleanedData.csv',
+                sep=',', index=False,
+                encoding='utf-8')
         elif dataset == "Wine quality white":
             whiteWineDataSet = fetch_data('wine_quality_white')
             counter = 0

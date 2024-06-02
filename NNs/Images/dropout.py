@@ -10,12 +10,11 @@ import random
 from torch.utils.data import DataLoader
 
 from NNs.Images.basicCNN import Net
-from utils.CustomDataset import CustomDataset
-from utils.run_logger import create_numeric_run_object
+from utils.customDataset import CustomDataset
 
 
-def run(datasetName, dataset, setting):
-    print(datasetName+" Dropout")
+def run(dataset_name, dataset, setting):
+    print(dataset_name+" Dropout")
     seed = random.randint(1, 100000)
     torch.manual_seed(seed)
 
@@ -26,9 +25,9 @@ def run(datasetName, dataset, setting):
     training_accuracies = []
     testing_accuracies = []
     difference_in_accuracies = []
-    if datasetName == "MNSIT":
+    if dataset_name == "MNSIT":
         data, labels = torch.tensor(dataset.data),  torch.tensor(dataset.targets)
-    elif datasetName == "Cifar-10":
+    elif dataset_name == "Cifar-10":
         data, labels = torch.tensor(dataset.data),  torch.tensor(dataset.targets)
         data = data.permute(0, 3, 1, 2)
     else:
@@ -63,24 +62,24 @@ def run(datasetName, dataset, setting):
             network=network.cuda()
 
         # Define loss function and optimizer
-        criterion = nn.CrossEntropyLoss()
+        loss_function = nn.CrossEntropyLoss()
         optimizer = optim.SGD(network.parameters(), lr=setting.learning_rate, momentum=setting.momentum)
 
         for epoch in range(setting.number_of_epochs):
             for batch in train_loader:
                 network.train()
                 training_outputs = network(batch['data'])
-                training_loss = criterion(training_outputs, batch['label'])
+                training_loss = loss_function(training_outputs, batch['label'])
 
                 optimizer.zero_grad()
                 training_loss.backward()
                 optimizer.step()
 
             training_outputs = network(x_training)
-            training_loss = criterion(training_outputs, y_training)
+            training_loss = loss_function(training_outputs, y_training)
 
             testing_output = network(x_testing)
-            testing_loss = criterion(testing_output, y_testing)
+            testing_loss = loss_function(testing_output, y_testing)
 
             _, predicted_labels = torch.max(training_outputs, 1)
             correct_predictions = (predicted_labels == y_training).sum().item()

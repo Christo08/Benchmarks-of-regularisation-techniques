@@ -3,6 +3,7 @@ import torch.nn as nn
 
 class DiabetesSettings:
     batch_size = 58
+    categorical_features = [0, 1, 2, 4, 5, 6, 7, 8, 9, 10, 11, 12, 15, 16, 17, 18, 19, 20]
     dropout_layer = [0.18341917, 0.00635388, 0.58905411, 0.394637, 0.62968202]
     learning_rate = 0.02362717591965803
     log_interval = 19
@@ -14,7 +15,7 @@ class DiabetesSettings:
     path_to_data = 'C:\\Users\\User\\OneDrive\\tuks\\master\\code\\Data\\Numeric\\DiabetesHealthIndicators\\cleanedData.csv'
     prune_amount = 0.26553199631005675
     prune_epoch_interval = 19
-    weight_decay = 0.2753287741235434
+    weight_decay = 0.0001
     weight_perturbation_epoch_interval = 22
     weight_perturbation_amount = 0.001
 
@@ -38,8 +39,52 @@ class DiabetesSettings:
         }
 
 
+class LiverCirrhosisSettings:
+    # not tuning
+    path_to_data = 'C:\\Users\\User\\OneDrive\\tuks\\master\\code\\Data\\Numeric\\Liver Cirrhosis\\cleanedData.csv'
+    number_of_fold = 15
+    log_interval = 19
+    categorical_features = [1, 2, 4, 5, 6, 7]
+
+    # 1st tuning
+    batch_size = 1024
+    learning_rate = 0.5926620569264897
+    momentum = 0.9
+    number_of_epochs = 500
+    number_of_hidden_layers = 3
+    number_of_neurons_in_layers = [800, 850, 100, 100, 200, 100, 800, 300, 1000, 100]
+
+    #2de tuning
+    dropout_layer = [0.17116384, 0.24310265, 0.50581393]
+    prune_amount = 0.31189753673586107
+    prune_epoch_interval = 50
+    weight_decay = 0.001
+    weight_perturbation_epoch_interval = 105
+    weight_perturbation_amount = 0.04433394526141158
+
+    def to_json_serializable(self):
+        return {
+            "batch_size": self.batch_size,
+            "dropout_layer": self.dropout_layer,
+            "learning_rate": self.learning_rate,
+            "log_interval": self.log_interval,
+            "momentum": self.momentum,
+            "number_of_epochs": self.number_of_epochs,
+            "number_of_fold": self.number_of_fold,
+            "number_of_hidden_layers": self.number_of_hidden_layers,
+            "number_of_neurons_in_layers": self.number_of_neurons_in_layers,
+            "path_to_data": self.path_to_data,
+            "prune_amount": self.prune_amount,
+            "prune_epoch_interval": self.prune_epoch_interval,
+            "weight_decay": self.weight_decay,
+            "weight_perturbation_amount": self.weight_perturbation_amount,
+            "weight_perturbation_epoch_interval": self.weight_perturbation_epoch_interval
+        }
+
+
 class MagicSettings:
     batch_size = 56
+    categorical_features = []
     dropout_layer = [0.3464047, 0.1661123]
     learning_rate = 0.051741706035525616
     log_interval = 10
@@ -78,6 +123,7 @@ class MagicSettings:
 class MfeatPixelSettings:
     batch_size = 42
     dropout_layer = [0.37802851, 0.51423422, 0.28836089, 0.73270707]
+    categorical_features = []
     learning_rate = 0.030189840897776998
     log_interval = 50
     number_of_neurons_in_layers = [180, 120, 70, 160, 180]
@@ -115,18 +161,19 @@ class MfeatPixelSettings:
 class RainInAustraliaSettings:
     batch_size = 88
     dropout_layer = [0.47023132, 0.2833416, 0.44631075, 0.400374, 0.47384847, 0.59316255, 0.47270801]
+    categorical_features = []
     learning_rate = 0.06946966889993425
     log_interval = 35
     number_of_neurons_in_layers = [550, 850, 700, 800, 800, 600, 550, 800, 750, 900]
     number_of_hidden_layers = 7
     momentum = 0.5
     number_of_epochs = 350
-    number_of_fold = 15
+    number_of_fold = 3
     path_to_data = "C:\\Users\\User\\OneDrive\\tuks\\master\\code\\Data\\Numeric\\Rain in Australia\\cleanedData.csv"
     prune_amount = 0.5
     prune_epoch_interval = 41
     weight_decay = 0.2168418766184487
-    weight_perturbation_amount = 0.001
+    weight_perturbation_amount = 0.0001
     weight_perturbation_epoch_interval = 33
 
     def to_json_serializable(self):
@@ -152,6 +199,7 @@ class RainInAustraliaSettings:
 class WhiteWineQualitySettings:
     batch_size = 32
     dropout_layer = [0, 0, 0.01221672, 0.57899157, 0.56500733]
+    categorical_features = []
     learning_rate = 0.00811431704457397
     log_interval = 20
     number_of_neurons_in_layers = [300, 250, 200, 850, 400, 4, 200, 1000, 700, 400, 350, 1000, 550, 900, 450, 150, 4,
@@ -162,8 +210,8 @@ class WhiteWineQualitySettings:
     number_of_fold = 15
     prune_amount = 0.07553485715290663
     prune_epoch_interval = 38
-    weight_decay = 0.3938271005258168
-    weight_perturbation_amount = 0.001
+    weight_decay = 0.0001
+    weight_perturbation_amount = 0.00201
     weight_perturbation_epoch_interval = 33
     path_to_data = 'C:\\Users\\User\\OneDrive\\tuks\\master\\code\\Data\\Numeric\\White Wine Quality\\cleanedData.csv'
 
@@ -216,8 +264,8 @@ class BallsSettings:
     rotation = 0
     dropout_layer = [0.5, 0.25, 0.1, 0.1, 0.25, 0.4, 0.3, 0.05]
     weight_decay = 0.25
-    prune_amount = 0.07553485715290663
-    prune_epoch_interval = 38
+    prune_amount = 0.001
+    prune_epoch_interval = 71
     weight_perturbation_amount = 0.001
     weight_perturbation_epoch_interval = 33
 
@@ -445,9 +493,9 @@ class ShoesSettings:
     # second
     rotation = 0
     dropout_layer = [0.5, 0.25, 0.1, 0.1, 0.25, 0.4, 0.3, 0.05]
-    weight_decay = 0.25
-    prune_amount = 0.07553485715290663
-    prune_epoch_interval = 38
+    weight_decay = 0.001
+    prune_amount = 0.028165123278217293
+    prune_epoch_interval = 100
     weight_perturbation_amount = 0.001
     weight_perturbation_epoch_interval = 33
 

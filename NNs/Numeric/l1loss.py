@@ -9,19 +9,19 @@ from sklearn.model_selection import KFold
 from torch.utils.data import DataLoader
 
 from NNs.Numeric.basicNN import Net
-from utils.CustomDataset import CustomDataset
-from utils.run_logger import create_numeric_run_object
+from utils.customDataset import CustomDataset
+from utils.runLogger import create_numeric_run_object
 
 
-def run(datasetName, setting, trainSet, validationSet):
-    print(datasetName+" l1 loss run")
+def run(dataset_name, setting, training_set, validation_set):
+    print(dataset_name+" l1 loss run")
     seed = random.randint(1, 100000)
     print("Random Seed: ", seed)
 
     torch.manual_seed(seed)
 
-    labels = trainSet[1]
-    features = trainSet[0]
+    labels = training_set[1]
+    features = training_set[0]
 
     classes = labels.unique().tolist()
 
@@ -34,23 +34,17 @@ def run(datasetName, setting, trainSet, validationSet):
 
     numberOfClasses = len(classes)
 
-    numberOfInputs = features_tensor.shape[1]
+    number_of_inputs = features_tensor.shape[1]
 
     kf = KFold(n_splits=setting.number_of_fold, shuffle=True, random_state=seed)
 
-    training_losses = []
-    training_accuracies = []
-
-    testing_losses = []
-    testing_accuracies = []
-
-    validation_losses = []
-    validation_accuracies = []
+    loss_function = CustomCrossEntropyLoss()
+    monitor = Monitor("Layer normalisation", dataset_name, seed, loss_function, settings.log_interval, x_validation, y_validation)
 
     difference_in_accuracies = []
 
-    x_validation = torch.tensor(validationSet[0].values, dtype=torch.float32)
-    y_validation = torch.tensor(validationSet[1].values, dtype=torch.long)
+    x_validation = torch.tensor(validation_set[0].values, dtype=torch.float32)
+    y_validation = torch.tensor(validation_set[1].values, dtype=torch.long)
 
     if torch.cuda.is_available():
         x_validation = x_validation.cuda()
@@ -58,52 +52,52 @@ def run(datasetName, setting, trainSet, validationSet):
 
     start_time = time.time()
     for fold, (train_index, test_index) in enumerate(kf.split(features_tensor)):
-        x_train, x_test = features_tensor[train_index], features_tensor[test_index]
-        y_train, y_test = labels_tensor[train_index], labels_tensor[test_index]
+        x_training, x_testing = features_tensor[train_index], features_tensor[test_index]
+        y_training, y_testing = labels_tensor[train_index], labels_tensor[test_index]
 
-        train_dataset = CustomDataset(x_train, y_train)
+        train_dataset = CustomDataset(x_training, y_training)
 
         train_loader = DataLoader(train_dataset, batch_size=setting.batch_size, shuffle=True)
 
-        network = Net(input_size=numberOfInputs,
+        network = Net(input_size=number_of_inputs,
                       hidden_sizes=setting.number_of_neurons_in_layers,
                       number_of_hidden_layers=setting.number_of_hidden_layers,
                       output_size=numberOfClasses)
         if torch.cuda.is_available():
             network=network.cuda()
 
-        criterion = nn.L1Loss()
+        loss_function = nn.L1Loss()
         optimizer = optim.SGD(network.parameters(), lr=setting.learning_rate, momentum=setting.momentum)
 
         for epoch in range(setting.number_of_epochs):
             for batch in train_loader:
                 network.train()
                 training_outputs = network(batch['data'])
-                training_loss = criterion(training_outputs, batch['label'])
+                training_loss = loss_function(training_outputs, batch['label'])
 
                 optimizer.zero_grad()
                 training_loss.backward()
                 optimizer.step()
 
-            training_outputs = network(x_train)
-            training_loss = criterion(training_outputs, y_train)
+            training_outputs = network(x_training)
+            training_loss = loss_function(training_outputs, y_training)
 
             network.eval()
 
-            test_outputs = network(x_test)
-            testing_loss = criterion(test_outputs, y_test)
+            test_outputs = network(x_testing)
+            testing_loss = loss_function(test_outputs, y_testing)
 
             validation_outputs = network(x_validation)
-            validation_loss = criterion(validation_outputs, y_validation)
+            validation_loss = loss_function(validation_outputs, y_validation)
 
             _, predicted_labels = torch.max(training_outputs, 1)
-            correct_predictions = (predicted_labels == y_train).sum().item()
-            total_samples = len(y_train)
+            correct_predictions = (predicted_labels == y_training).sum().item()
+            total_samples = len(y_training)
             training_accuracy = correct_predictions / total_samples * 100
 
             _, predicted_labels = torch.max(test_outputs, 1)
-            correct_predictions = (predicted_labels == y_test).sum().item()
-            total_samples = len(y_test)
+            correct_predictions = (predicted_labels == y_testing).sum().item()
+            total_samples = len(y_testing)
             testing_accuracy = correct_predictions / total_samples * 100
 
             _, predicted_labels = torch.max(validation_outputs, 1)

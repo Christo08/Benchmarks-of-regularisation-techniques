@@ -3,29 +3,29 @@ from datetime import datetime
 
 from matplotlib import pyplot as plt
 
-from NNs.Images.batchNormalisation import run as BatchNormalisationRun
-from NNs.Images.dropout import run as DropoutRun
-from NNs.Images.geometricTransformation import run as GeometricTransformationRun
-from NNs.Images.layerNormalisation import run as LayerNormalisationRun
-from NNs.Images.baseline import run as LeakyReLURun
-from NNs.Images.pruning import run as PruningRun
-from NNs.Images.regularisationTerm import run as RegularisationTermRun
-from NNs.Images.weightNormalisation import run as WeightNormalisationRun
-from NNs.Images.weightPerturbation import run as weightPerturbationRun
+# from NNs.Images.batchNormalisation import run as BatchNormalisationRun
+# from NNs.Images.dropout import run as DropoutRun
+# from NNs.Images.geometricTransformation import run as GeometricTransformationRun
+# from NNs.Images.layerNormalisation import run as LayerNormalisationRun
+from NNs.Images.baseline import run as BaselineImagesRun
+# from NNs.Images.pruning import run as PruningRun
+# from NNs.Images.regularisationTerm import run as RegularisationTermRun
+# from NNs.Images.weightNormalisation import run as WeightNormalisationRun
+# from NNs.Images.weightPerturbation import run as weightPerturbationRun
 
 from NNs.Numeric.baseline import run as BaselineNumericRun
 from NNs.Numeric.batchNormalisation import run as BatchNormalisationNumericRun
 from NNs.Numeric.dropout import run as DropoutNumericRun
-from NNs.Numeric.l1loss import run as L1LossNumericRun
+# from NNs.Numeric.l1loss import run as L1LossNumericRun
 from NNs.Numeric.layerNormalisation import run as LayerNormalisationNumericRun
-from NNs.Numeric.mseLoss import run as MSELossNumericRun
+# from NNs.Numeric.mseLoss import run as MSELossNumericRun
 from NNs.Numeric.pruning import run as PruningNumericRun
 from NNs.Numeric.regularisationTerm import run as RegularisationTermNumericRun
 from NNs.Numeric.smote import run as SMOTENumericRun
 from NNs.Numeric.weightNormalisation import run as WeightNormalisationNumericRun
 from NNs.Numeric.weightPerturbation import run as WeightPerturbationNumericRun
 
-from utils.dataLoader import loadNumericDataSet
+from utils.dataLoader import loadNumericDataSet, loadImagesDatasSet
 
 graphTypes = []
 regularisationMethods = []
@@ -50,7 +50,7 @@ def drawPlot(lines, labels, xLabel, yLabel, title):
     plt.show()
 
 
-# def runImages(datasetName, dataset, setting):
+# def runImages(dataset_name, dataset, setting):
 #     training_accuracies = []
 #     testing_accuracies = []
 #     validation_accuracies = []
@@ -58,7 +58,7 @@ def drawPlot(lines, labels, xLabel, yLabel, title):
 #     accuracies = []
 #     labels = []
 #     dataset_run = {
-#         "datasetName": datasetName,
+#         "dataset_name": dataset_name,
 #         "datasetPath": "Images",
 #         "runs": []
 #     }
@@ -66,7 +66,7 @@ def drawPlot(lines, labels, xLabel, yLabel, title):
 #         regularisationMethods.clear()
 #         regularisationMethods.extend(str(i) for i in range(1, 13))
 #     if "1" in regularisationMethods:
-#         runObject = BatchNormalisationRun(datasetName, dataset, setting)
+#         runObject = BatchNormalisationRun(dataset_name, dataset, setting)
 #         dataset_run["runs"].append(runObject)
 #         if "4" in graphTypes:
 #             accuracies.append(runObject["results"]["training_accuracies"])
@@ -81,7 +81,7 @@ def drawPlot(lines, labels, xLabel, yLabel, title):
 #             labels.append("Batch Normalisation")
 #     if "2" in regularisationMethods:
 #         print("1")
-#         # runObject = ComboRun(datasetName, dataset, setting)
+#         # runObject = ComboRun(dataset_name, dataset, setting)
 #         # dataset_run["runs"].append(runObject)
 #         # if "1" in graphTypes:
 #         #     training_accuracies.append(runObject["results"]["training_accuracies"])
@@ -98,7 +98,7 @@ def drawPlot(lines, labels, xLabel, yLabel, title):
 #         #     labels.append("Combo Activation\nFunction")
 #     if "3" in regularisationMethods:
 #         print("2")
-#         # runObject = CrossEntropyRun(datasetName, dataset, setting)
+#         # runObject = CrossEntropyRun(dataset_name, dataset, setting)
 #         # dataset_run["runs"].append(runObject)
 #         # if "1" in graphTypes:
 #         #     training_accuracies.append(runObject["results"]["training_accuracies"])
@@ -114,7 +114,7 @@ def drawPlot(lines, labels, xLabel, yLabel, title):
 #         # else:
 #         #     labels.append("Cross-Entropy Loss\nFunction")
 #     if "4" in regularisationMethods:
-#         runObject = DropoutRun(datasetName, dataset, setting)
+#         runObject = DropoutRun(dataset_name, dataset, setting)
 #         dataset_run["runs"].append(runObject)
 #         if "4" in graphTypes:
 #             accuracies.append(runObject["results"]["training_accuracies"])
@@ -129,20 +129,20 @@ def drawPlot(lines, labels, xLabel, yLabel, title):
 #             labels.append("Dropout")
 #     if "5" in regularisationMethods:
 #         contine = True
-#         if datasetName == 'Balls':
+#         if dataset_name == 'Balls':
 #             dataset, settings = loadBallsData(True)
-#         elif datasetName == "Bean Leaf":
+#         elif dataset_name == "Bean Leaf":
 #             dataset, settings = loadBeanLeafData(True)
-#         elif datasetName == "Cifar-10":
+#         elif dataset_name == "Cifar-10":
 #             dataset, settings = loadCifarData(True)
-#         elif datasetName == "MNIST":
+#         elif dataset_name == "MNIST":
 #             # dataset, settings = loadMNISTData(True)
 #             contine = False
 #         else:
 #             dataset, settings = loadShoesData(True)
 #
 #         if contine:
-#             runObject = GeometricTransformationRun(datasetName, dataset, setting)
+#             runObject = GeometricTransformationRun(dataset_name, dataset, setting)
 #             dataset_run["runs"].append(runObject)
 #             if "4" in graphTypes:
 #                 accuracies.append(runObject["results"]["training_accuracies"])
@@ -156,7 +156,7 @@ def drawPlot(lines, labels, xLabel, yLabel, title):
 #                 validation_accuracies.append(runObject["results"]["validation_accuracies"])
 #                 labels.append("Geometric\nTransformation")
 #     if "6" in regularisationMethods:
-#         runObject = LayerNormalisationRun(datasetName, dataset, setting)
+#         runObject = LayerNormalisationRun(dataset_name, dataset, setting)
 #         dataset_run["runs"].append(runObject)
 #         if "4" in graphTypes:
 #             accuracies.append(runObject["results"]["training_accuracies"])
@@ -170,7 +170,7 @@ def drawPlot(lines, labels, xLabel, yLabel, title):
 #             validation_accuracies.append(runObject["results"]["validation_accuracies"])
 #             labels.append("Layer Normalisation")
 #     if "7" in regularisationMethods:
-#         runObject = LeakyReLURun(datasetName, dataset, setting)
+#         runObject = LeakyReLURun(dataset_name, dataset, setting)
 #         dataset_run["runs"].append(runObject)
 #         if "4" in graphTypes:
 #             accuracies.append(runObject["results"]["training_accuracies"])
@@ -184,7 +184,7 @@ def drawPlot(lines, labels, xLabel, yLabel, title):
 #             validation_accuracies.append(runObject["results"]["validation_accuracies"])
 #             labels.append("LeakyReLU Activation\nFunction")
 #     if "8" in regularisationMethods:
-#         runObject = PruningRun(datasetName, dataset, setting)
+#         runObject = PruningRun(dataset_name, dataset, setting)
 #         dataset_run["runs"].append(runObject)
 #         if "4" in graphTypes:
 #             accuracies.append(runObject["results"]["training_accuracies"])
@@ -198,7 +198,7 @@ def drawPlot(lines, labels, xLabel, yLabel, title):
 #             validation_accuracies.append(runObject["results"]["validation_accuracies"])
 #             labels.append("Pruning")
 #     if "9" in regularisationMethods:
-#         runObject = RegularisationTermRun(datasetName, dataset, setting)
+#         runObject = RegularisationTermRun(dataset_name, dataset, setting)
 #         dataset_run["runs"].append(runObject)
 #         if "4" in graphTypes:
 #             accuracies.append(runObject["results"]["training_accuracies"])
@@ -213,7 +213,7 @@ def drawPlot(lines, labels, xLabel, yLabel, title):
 #             labels.append("Regularisation Term")
 #     if "10" in regularisationMethods:
 #         print("3")
-#         # runObject = SigmoidRun(datasetName, dataset, setting)
+#         # runObject = SigmoidRun(dataset_name, dataset, setting)
 #         # dataset_run["runs"].append(runObject)
 #         # if "4" in graphTypes:
 #         #     accuracies.append(runObject["results"]["training_accuracies"])
@@ -227,7 +227,7 @@ def drawPlot(lines, labels, xLabel, yLabel, title):
 #         #     validation_accuracies.append(runObject["results"]["validation_accuracies"])
 #         #     labels.append("Sigmoid Activation\nFunction")
 #     if "11" in regularisationMethods:
-#         runObject = WeightNormalisationRun(datasetName, dataset, setting)
+#         runObject = WeightNormalisationRun(dataset_name, dataset, setting)
 #         dataset_run["runs"].append(runObject)
 #         if "4" in graphTypes:
 #             accuracies.append(runObject["results"]["training_accuracies"])
@@ -241,7 +241,7 @@ def drawPlot(lines, labels, xLabel, yLabel, title):
 #             validation_accuracies.append(runObject["results"]["validation_accuracies"])
 #             labels.append("Weight Normalisation")
 #     if "12" in regularisationMethods:
-#         runObject = weightPerturbationRun(datasetName, dataset, setting)
+#         runObject = weightPerturbationRun(dataset_name, dataset, setting)
 #         dataset_run["runs"].append(runObject)
 #         if "4" in graphTypes:
 #             accuracies.append(runObject["results"]["training_accuracies"])
@@ -260,25 +260,25 @@ def drawPlot(lines, labels, xLabel, yLabel, title):
 #                  labels,
 #                  'Epochs',
 #                  'Training accuracies',
-#                  datasetName + ': Epochs vs Training accuracies')
+#                  dataset_name + ': Epochs vs Training accuracies')
 #     if "2" in graphTypes:
 #         drawPlot(testing_accuracies,
 #                  labels,
 #                  'Epochs',
 #                  'Testing accuracies',
-#                  datasetName + ': Epochs vs Testing accuracies')
+#                  dataset_name + ': Epochs vs Testing accuracies')
 #     if "3" in graphTypes:
 #         drawPlot(difference_in_accuracies,
 #                  labels,
 #                  'Epochs',
 #                  'Difference',
-#                  datasetName + ': Epochs vs Difference in training and testing accuracies')
+#                  dataset_name + ': Epochs vs Difference in training and testing accuracies')
 #     if "4" in graphTypes:
 #         drawPlot(accuracies,
 #                  labels,
 #                  'Epochs',
 #                  'Difference',
-#                  datasetName + ': Epochs vs accuracies')
+#                  dataset_name + ': Epochs vs accuracies')
 #
 #     return dataset_run
 #
@@ -290,9 +290,9 @@ def saveRuns(file, datasetsRuns):
 
 def selectDataset(datasetType):
     if datasetType == "1":
-        datasets = []
+        datasets = ["Balls", "BeanLeafs", "Cifar10", "MNIST", "Shoes"]
     else:
-        datasets = ["Diabetes", "Magic", "MfeatPixel", "RainInAustralia", "WhiteWineQuality"]
+        datasets = ["Diabetes", "LiverCirrhosis", "Magic", "MfeatPixel", "WhiteWineQuality"]
 
     inputText = "Select one or more of the problem domain:\n"
     counter = 1
@@ -303,22 +303,24 @@ def selectDataset(datasetType):
 
     selectsProblemDomains = input(inputText)
     selectsProblemDomains = selectsProblemDomains.split(" ")
-    datasetName = []
+    dataset_name = []
     if str(counter) in selectsProblemDomains:
         selectsProblemDomains.clear()
         selectsProblemDomains.extend(str(i) for i in range(0, len(datasets)))
         for domain in selectsProblemDomains:
-            datasetName.append(datasets[int(domain)])
+            dataset_name.append(datasets[int(domain)])
     else:
         for domain in selectsProblemDomains:
-            datasetName.append(datasets[int(domain)-1])
+            dataset_name.append(datasets[int(domain)-1])
 
-    return datasetName
+    return dataset_name
 
 
 def selectsRegularisationMethodFunction(datasetType):
     if datasetType == "1":
-        regularisationMethods = []
+        regularisationMethods = ["Baseline", "Batch Normalisation", "Dropout",  "Geometric Transformation",
+                                 "Layer Normalisation", "Pruning", "Regularisation Term", "Weight Normalisation",
+                                 "Weight Perturbation"]
     else:
         regularisationMethods = ["Baseline", "Batch Normalisation", "Dropout",  "Layer Normalisation",
                                  "Pruning", "Regularisation Term", "SMOTE", "Weight Normalisation",
@@ -337,8 +339,12 @@ def selectsRegularisationMethodFunction(datasetType):
         selectedRegularisationMethods.extend(str(i) for i in range(1, len(regularisationMethods)+1))
 
     runFunctions = []
+    if selectDataType == "1":
+        runTime = "ImagesRun"
+    else:
+        runTime = "NumericRun"
     for method in selectedRegularisationMethods:
-        functionName = regularisationMethods[int(method)-1].replace(" ", "") + "NumericRun"
+        functionName = regularisationMethods[int(method)-1].replace(" ", "") + runTime
         runFunctions.append(globals()[functionName])
     return runFunctions
 
@@ -351,19 +357,20 @@ regularisationMethodFunction = selectsRegularisationMethodFunction(selectDataTyp
 current_datetime = datetime.now()
 formatted_datetime = current_datetime.strftime("%Y-%m-%d_%H-%M-%S")
 
-for datasetName in datasetNames:
+for dataset_name in datasetNames:
     dataset_run = {
-        "datasetName": datasetName,
+        "dataset_name": dataset_name,
         "datasetPath": "",
         "runs": []
     }
     if selectDataType == "1":
-        filename = "Results//Images//" + formatted_datetime + "_" + datasetName + '.json'
+        filename = "Results//Images//" + formatted_datetime + "_" + dataset_name + '.json'
+        training_set, validation_set, setting = loadImagesDatasSet(dataset_name)
     else:
-        filename = "Results//Numeric//" + formatted_datetime + "_" + datasetName + '.json'
-        trainSet, validationSet, setting = loadNumericDataSet(datasetName)
+        filename = "Results//Numeric//" + formatted_datetime + "_" + dataset_name + '.json'
+        training_set, validation_set, setting = loadNumericDataSet(dataset_name)
     dataset_run["datasetPath"] = setting.path_to_data
     for runFunction in regularisationMethodFunction:
-        runObject = runFunction(datasetName, setting, trainSet, validationSet)
+        runObject = runFunction(dataset_name, setting, training_set, validation_set)
         dataset_run["runs"].append(runObject)
         saveRuns(filename, dataset_run)

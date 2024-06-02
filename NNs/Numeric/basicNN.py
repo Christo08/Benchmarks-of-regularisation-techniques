@@ -47,6 +47,7 @@ class Net(nn.Module):
                     layers[index] = nn.utils.weight_norm(layers[index])
         # Add the output layer
         layers.append(nn.Linear(hidden_sizes[number_of_hidden_layers-1], output_size))
+        layers.append(nn.Softmax(dim=1))
 
         # Combine all layers using Sequential
         self.network = nn.Sequential(*layers)

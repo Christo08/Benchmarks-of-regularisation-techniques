@@ -2,110 +2,84 @@ import math
 
 import pyhopper
 import torch
-import torch.nn as nn
 import torch.optim as optim
 from sklearn.model_selection import KFold
 from torch.utils.data import DataLoader
-from datetime import datetime
 
 from NNs.Images.basicCNN import Net
-from utils.CustomDataset import CustomDataset
-from utils.dataLoader import loadImagesDatasSet
+from utils.customDataset import CustomDataset
+from utils.dataLoader import clean_labels, loadImagesDatasSet
+from utils.lossFucntions import CustomCrossEntropyLoss
 
 
 def train(params):
-    labels = trainSet[1]
-    features = trainSet[0]
+    pool_size = params['pool_size']
+    out_channels = params['out_channels']
+    kernel_size = params['kernel_size']
+    kernel_stride = params['kernel_stride']
+    for counter in range(1, params['number_of_convolutional_layers']):
+        if pool_size[counter] > out_channels[counter-1]:
+            pool_size[counter] = out_channels[counter-1]
+        if kernel_size[counter] > pool_size[counter-1]:
+            kernel_size[counter] = pool_size[counter-1]
+        if kernel_stride[counter] > kernel_size[counter]:
+            kernel_stride[counter] = kernel_size[counter]
+    params['pool_size'] = pool_size
+    params['out_channels'] = out_channels
+    params['kernel_size'] = kernel_size
+    params['kernel_stride'] = kernel_stride
+    labels = training_set[1]
+    features_tensor = training_set[0]
+    number_of_outputs = len(labels.unique().tolist())
+    labels_tensor = clean_labels(labels, number_of_outputs)
 
-    pool_size = []
+    if torch.cuda.is_available():
+        features_tensor = features_tensor.cuda()
+        labels_tensor = labels_tensor.cuda()
 
-    for counter in range(setting.number_of_convolutional_layers):
-        if setting.out_channels[counter] < setting.pool_size[counter]:
-            setting.pool_size[counter] = setting.out_channels[counter]
+    kf = KFold(n_splits=settings.number_of_fold, shuffle=True)
 
-        pool_size.append((setting.pool_size[counter], setting.pool_size[counter]))
-
-        if setting.pool_size[counter - 1] < setting.kernel_size[counter] and counter != 0:
-            setting.kernel_size[counter] = setting.pool_size[counter - 1]
-        elif setting.in_channels < setting.kernel_size[counter] and counter == 0:
-            setting.kernel_size[counter] = setting.in_channels
-
-        if setting.kernel_size[counter] < setting.kernel_stride[counter]:
-            setting.kernel_stride[counter] = setting.kernel_size[counter]
-
-    testing_accuracy = 0
-
-    kf = KFold(n_splits=setting.number_of_fold, shuffle=True)
-
-    for train_index, test_index in kf.split(features):
-        x_training, x_testing = features[train_index], features[test_index]
-        y_training, y_testing = labels[train_index], labels[test_index]
-
-        network = Net(setting.in_channels,
-                      setting.number_of_convolutional_layers,
-                      setting.out_channels,
-                      setting.kernel_size,
-                      setting.kernel_stride,
-                      pool_size,
-                      setting.pool_type,
-                      setting.number_of_hidden_layers,
-                      setting.number_of_neurons_in_layers,
-                      setting.output_size,
-                      )
-
-        if torch.cuda.is_available():
-            torch.cuda.empty_cache()
-            network = network.cuda(device=0)
-            x_training = x_training.cuda(device=0)
-            y_training = y_training.cuda(device=0)
-
-        criterion = nn.CrossEntropyLoss()
-        optimizer = optim.SGD(network.parameters(), lr=setting.learning_rate, momentum=setting.momentum)
+    loss_function = CustomCrossEntropyLoss()
+    loss = 0
+    for fold, (train_index, test_index) in enumerate(kf.split(features_tensor)):
+        # Initialize the network, optimizer, and loss function
+        x_training, x_testing = features_tensor[train_index], features_tensor[test_index]
+        y_training, y_testing = labels_tensor[train_index], labels_tensor[test_index]
 
         train_dataset = CustomDataset(x_training, y_training)
 
-        train_loader = DataLoader(train_dataset, batch_size=setting.batch_size, shuffle=True)
+        train_loader = DataLoader(train_dataset, batch_size=params["batch_size"], shuffle=True)
 
-        for epoch in range(setting.number_of_epochs):
+        network = Net(in_channels=settings.in_channels,
+                      number_of_convolutional_layers=params["number_of_convolutional_layers"],
+                      out_channels=params["out_channels"],
+                      kernel_size=params["kernel_size"],
+                      kernel_stride=params["kernel_stride"],
+                      pool_size=params["pool_size"],
+                      pool_type=params["pool_type"],
+                      number_of_hidden_layers=params["number_of_hidden_layers"],
+                      number_of_neurons_in_layers=params["number_of_neurons_in_layers"],
+                      output_size=number_of_outputs)
+        if torch.cuda.is_available():
+            network = network.cuda()
+
+        optimizer = optim.SGD(network.parameters(), lr=params["learning_rate"], momentum=params["momentum"])
+
+        for epoch in range(params["number_of_epochs"]):
             for batch in train_loader:
-                data = batch['data']
-                label = batch['label']
-                data = data.float()
-                if torch.cuda.is_available():
-                    torch.cuda.empty_cache()
-                    network = network.cuda(device=0)
-                    data = data.cuda(device=0)
-                    label = label.cuda(device=0)
                 network.train()
-                training_outputs = network(data)
-                training_loss = criterion(training_outputs, label)
+                training_outputs = network(batch['data'])
+                training_loss = loss_function(training_outputs, batch['label'])
 
                 optimizer.zero_grad()
                 training_loss.backward()
                 optimizer.step()
+        loss += loss_function(network(x_testing), y_testing).item()
 
-        if torch.cuda.is_available():
-            x_testing = x_testing.float().cuda(device=0)
-            y_testing = y_testing.cuda(device=0)
-        testing_output = network(x_testing)
-
-        _, predicted_labels = torch.max(testing_output, 1)
-        correct_predictions = (predicted_labels == y_testing).sum().item()
-        total_samples = y_testing.shape[0]
-        testing_accuracy += correct_predictions / total_samples * 100
+    return loss/settings.number_of_fold
 
 
-        if epoch%params["prune_epoch_interval"] == 0 and epoch > 0:
-            network.prune(amount=params["prune_amount"])
-
-    return testing_accuracy / setting.number_of_fold
-
-
-datasets = ["Balls",
-            "BeanLeafs",
-            "Cifar10",
-            "MNIST",
-            "Shoes"]
+datasets = ["Balls", "BeanLeafs", "Cifar10", "MNIST", "Shoes"]
 names = "0.\t exit\n"
 counter = 1
 for dataset in datasets:
@@ -114,29 +88,37 @@ for dataset in datasets:
 names += str(counter) + ".\t All\n"
 
 while True:
-    nameIndexes = input("Please select a dataset's name by enter a number:\n" + names).split(" ")
-    if "0" in nameIndexes:
+    nameIndex = int(input("Please select a dataset's name by enter a number:\n" + names))
+    if nameIndex == 0:
         break
     datasetNames = []
-    if "6" in nameIndexes:
+    if nameIndex == 6:
         datasetNames = datasets
     else:
-        for index in nameIndexes:
-            datasetNames.append(datasets[int(index) - 1])
+        datasetNames.append(datasets[nameIndex - 1])
     for dataset in datasetNames:
-        trainSet, validationSet, setting = loadImagesDatasSet(dataset, False)
+        training_set, validation_set, settings = loadImagesDatasSet(dataset)
         search = pyhopper.Search({
-            "prune_amount": pyhopper.float(0.001, 0.999),
-            "prune_epoch_interval": pyhopper.int(2, math.floor(setting.number_of_epochs / 4))
+            "batch_size": pyhopper.int(16, 1024, power_of=2),
+            "learning_rate": pyhopper.float(0.0005, 0.25, log=True),
+            "momentum": pyhopper.float(0.0005, 0.25, log=True),
+            "number_of_epochs": pyhopper.int(50, 500, multiple_of=50),
+            "number_of_convolutional_layers": pyhopper.int(2, 7),
+            "out_channels": pyhopper.int(2, 64, power_of=2, shape=7),
+            "kernel_size": pyhopper.int(2, 64, power_of=2, shape=7),
+            "kernel_stride": pyhopper.int(2, 64, power_of=2, shape=7),
+            "pool_size": pyhopper.int(2, 64, power_of=2, shape=7),
+            "pool_type": pyhopper.int(0, 1, shape=7),
+            "number_of_hidden_layers": pyhopper.int(2, 7),
+            "number_of_neurons_in_layers": pyhopper.int(50, 500, multiple_of=25, shape=7)
         })
         best_params = search.run(
             train,
-            direction="max",
+            direction="min",
             steps=150,
             n_jobs="per-gpu",
-            checkpoint_path= "Results/optimiserCheckpoints/",
-            overwrite_checkpoint=True
         )
+
         test_acc = train(best_params)
         print(f"Tuned params test {dataset} accuracy: {test_acc:0.2f}%")
         print(dataset + ": ", best_params)
