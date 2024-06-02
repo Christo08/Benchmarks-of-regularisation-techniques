@@ -117,7 +117,7 @@ if __name__ == '__main__':
             print(gametesDataset)
         elif dataset == "Healthcare":
             healthcareDataSet = pd.read_csv(
-                'C:\\Users\\User\\OneDrive\\tuks\\master\\code\\Data\\Numeric\\Healthcare\\healthcare_dataset.csv')
+                'Data/Numeric/Healthcare/healthcare_dataset.csv')
 
             for column in healthcareDataSet.columns:
                 if column == "Age" or column == "Billing Amount" or column == "Room Number":
@@ -127,7 +127,7 @@ if __name__ == '__main__':
                     healthcareDataSet[column] = healthcareDataSet[column].cat.codes
             healthcareDataSet.rename(columns={'Test Results': 'target'}, inplace=True)
             healthcareDataSet.to_csv(
-                'C:\\Users\\User\\OneDrive\\tuks\\master\\code\\Data\\Numeric\\Healthcare\\cleanedData.csv',
+                'Data/Numeric/Healthcare/cleanedData.csv',
                 sep=',', index=False,
                 encoding='utf-8')
         elif dataset == "Magic":
@@ -159,8 +159,7 @@ if __name__ == '__main__':
             diabetesDataSet.to_csv('Data/Numeric/DiabetesHealthIndicators/cleanedData.csv', sep=',', index=False,
                                    encoding='utf-8')
         elif dataset == "Liver Cirrhosis":
-            liverCirrhosisDataSet = pd.read_csv('C:\\Users\\User\\OneDrive\\tuks\\master\\code\\Data\\Numeric\\Liver '
-                                                'Cirrhosis\\liver_cirrhosis.csv')
+            liverCirrhosisDataSet = pd.read_csv('Data/Numeric/Liver Cirrhosis/liver_cirrhosis.csv')
             for column in liverCirrhosisDataSet.columns:
                 print(column, type(column))
                 if (column == "Status" or column == "Drug" or column == "Sex" or column == "Stage" or
@@ -172,7 +171,7 @@ if __name__ == '__main__':
 
             liverCirrhosisDataSet.rename(columns={'Stage': 'target'}, inplace=True)
             liverCirrhosisDataSet.to_csv(
-                'C:\\Users\\User\\OneDrive\\tuks\\master\\code\\Data\\Numeric\\Liver Cirrhosis\\cleanedData.csv',
+                'Data/Numeric/Liver Cirrhosis/cleanedData.csv',
                 sep=',', index=False,
                 encoding='utf-8')
         elif dataset == "MNSIT":
@@ -207,7 +206,7 @@ if __name__ == '__main__':
             solarDataSet.to_csv("Data/Numeric/Solar Flares/cleanedData.csv", sep=',', index=False, encoding='utf-8')
         elif dataset == "Rain in Australia":
             rainDataSet = pd.read_csv(
-                'C:\\Users\\User\\OneDrive\\tuks\\master\\code\\Data\\Numeric\\Rain in Australia\\weatherAUS.csv')
+                'Data/Numeric/Rain in Australia/weatherAUS.csv')
             rainDataSet = rainDataSet.drop(columns=["Date"])
 
             rows_to_remove = rainDataSet[rainDataSet['RainTomorrow'].isna()]
@@ -248,7 +247,7 @@ if __name__ == '__main__':
                     rainDataSet[column].fillna(rainDataSet[column].mean(), inplace=True)
                     rainDataSet[column] = zscore(rainDataSet[column])
             rainDataSet.to_csv(
-                'C:\\Users\\User\\OneDrive\\tuks\\master\\code\\Data\\Numeric\\Rain in Australia\\cleanedData.csv',
+                'Data/Numeric/Rain in Australia/cleanedData.csv',
                 sep=',', index=False,
                 encoding='utf-8')
         elif dataset == "Wine quality white":

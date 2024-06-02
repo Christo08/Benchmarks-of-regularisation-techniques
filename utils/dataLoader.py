@@ -26,7 +26,7 @@ def loadNumericDataSet(dataset_name):
         setting = RainInAustraliaSettings()
     else:
         setting = WhiteWineQualitySettings()
-    with open('C:\\Users\\User\\OneDrive\\tuks\\master\\code\\Data\\validationSet.json', 'r') as file:
+    with open('Data/validationSet.json', 'r') as file:
         validationSetJson = json.load(file)
     dataset = pd.read_csv(setting.path_to_data)
     labels = dataset.get('target')
@@ -35,7 +35,7 @@ def loadNumericDataSet(dataset_name):
         seed = random.randint(1, 100000)
         validationSetJson[dataset_name]["validation"], validationSetJson[dataset_name][
             "train"] = createValidationSetIndex(labels, seed)
-        with open('C:\\Users\\User\\OneDrive\\tuks\\master\\code\\Data\\validationSet.json', 'w') as json_file:
+        with open('Data/validationSet.json', 'w') as json_file:
             json.dump(validationSetJson, json_file, indent=4)
     validation_set = (
         features.iloc[validationSetJson[dataset_name]["validation"]],
@@ -69,7 +69,7 @@ def loadImagesDatasSet(dataset_name):
         dataset = torchvision.datasets.MNIST(root=setting.path_to_data, download=True, transform=transform)
     else:
         dataset = torchvision.datasets.ImageFolder(root=setting.path_to_data, transform=transform)
-    with open('C:\\Users\\User\\OneDrive\\tuks\\master\\code\\Data\\validationSet.json', 'r') as file:
+    with open('Data/validationSet.json', 'r') as file:
         validationSetJson = json.load(file)
 
     if dataset_name == 'MNIST':
@@ -91,7 +91,7 @@ def loadImagesDatasSet(dataset_name):
         seed = random.randint(1, 100000)
         validationSetJson[dataset_name]["validation"], validationSetJson[dataset_name][
             "train"] = createValidationSetIndex(labels.tolist(), seed)
-        with open('C:\\Users\\User\\OneDrive\\tuks\\master\\code\\Data\\validationSet.json', 'w') as json_file:
+        with open('Data/validationSet.json', 'w') as json_file:
             json.dump(validationSetJson, json_file, indent=4)
 
     validationIndex = torch.tensor(validationSetJson[dataset_name]["validation"])

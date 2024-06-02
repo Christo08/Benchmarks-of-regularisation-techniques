@@ -12,7 +12,7 @@ class DiabetesSettings:
     number_of_fold = 15
     number_of_hidden_layers = 5
     number_of_neurons_in_layers = [150, 60, 200, 30, 20]
-    path_to_data = 'C:\\Users\\User\\OneDrive\\tuks\\master\\code\\Data\\Numeric\\DiabetesHealthIndicators\\cleanedData.csv'
+    path_to_data = './Data/Numeric/DiabetesHealthIndicators/cleanedData.csv'
     prune_amount = 0.26553199631005675
     prune_epoch_interval = 19
     weight_decay = 0.0001
@@ -41,7 +41,7 @@ class DiabetesSettings:
 
 class LiverCirrhosisSettings:
     # not tuning
-    path_to_data = 'C:\\Users\\User\\OneDrive\\tuks\\master\\code\\Data\\Numeric\\Liver Cirrhosis\\cleanedData.csv'
+    path_to_data = 'Data/Numeric/Liver Cirrhosis/cleanedData.csv'
     number_of_fold = 15
     log_interval = 19
     categorical_features = [1, 2, 4, 5, 6, 7]
@@ -93,7 +93,7 @@ class MagicSettings:
     number_of_fold = 15
     number_of_hidden_layers = 2
     number_of_neurons_in_layers = [250, 90, 160, 140, 180]
-    path_to_data = 'C:\\Users\\User\\OneDrive\\tuks\\master\\code\\Data\\Numeric\\Magic\\cleanedData.csv'
+    path_to_data = 'Data/Numeric/Magic/cleanedData.csv'
     prune_amount = 0.3024614034723992
     prune_epoch_interval = 10
     weight_decay = 0.0021290144020112553
@@ -136,7 +136,7 @@ class MfeatPixelSettings:
     weight_decay = 0.0017247976613359497
     weight_perturbation_amount = 0.001
     weight_perturbation_epoch_interval = 3
-    path_to_data = "C:\\Users\\User\\OneDrive\\tuks\\master\\code\\Data\\Numeric\\Mfeat_pixel\\cleanedData.csv"
+    path_to_data = "Data/Numeric/Mfeat_pixel/cleanedData.csv"
 
     def to_json_serializable(self):
         return {
@@ -169,7 +169,7 @@ class RainInAustraliaSettings:
     momentum = 0.5
     number_of_epochs = 350
     number_of_fold = 3
-    path_to_data = "C:\\Users\\User\\OneDrive\\tuks\\master\\code\\Data\\Numeric\\Rain in Australia\\cleanedData.csv"
+    path_to_data = "Data/Numeric/Rain in Australia/weatherAUS.csv"
     prune_amount = 0.5
     prune_epoch_interval = 41
     weight_decay = 0.2168418766184487
@@ -213,7 +213,7 @@ class WhiteWineQualitySettings:
     weight_decay = 0.0001
     weight_perturbation_amount = 0.00201
     weight_perturbation_epoch_interval = 33
-    path_to_data = 'C:\\Users\\User\\OneDrive\\tuks\\master\\code\\Data\\Numeric\\White Wine Quality\\cleanedData.csv'
+    path_to_data = 'Data/Numeric/White Wine Quality/cleanedData.csv'
 
     def to_json_serializable(self):
         return {
@@ -238,7 +238,7 @@ class WhiteWineQualitySettings:
 class BallsSettings:
     # not tuning
     log_interval = 10
-    path_to_data = 'C:\\Users\\User\\OneDrive\\tuks\\master\\code\\Data\\Images\\Balls\\cleanedData'
+    path_to_data = 'Data/Images/Balls/cleanedData'
     in_channels = 3
     output_size = 30
     number_of_fold = 3
@@ -297,7 +297,7 @@ class BallsSettings:
 
 class BeanLeafSettings:
     log_interval = 10
-    path_to_data = 'C:\\Users\\User\\OneDrive\\tuks\\master\\code\\Data\\Images\\Bean Leaf Lesions Classification\\cleandData'
+    path_to_data = 'Data/Images/Bean Leaf Lesions Classification/cleandData'
     in_channels = 3
     output_size = 3
     number_of_fold = 3
@@ -355,7 +355,7 @@ class BeanLeafSettings:
 
 
 class CifarSettings:
-    path_to_data = 'C:\\Users\\User\\OneDrive\\tuks\\master\\code\\Data\\Images\\Cifar-10'
+    path_to_data = 'Data/Images/Cifar-10'
     in_channels = 3
     output_size = 10
     number_of_fold = 3
@@ -411,7 +411,7 @@ class CifarSettings:
 
 
 class MNISTSettings:
-    path_to_data = 'C:\\Users\\User\\OneDrive\\tuks\\master\\code\\Data\\Images\\MNIST'
+    path_to_data = 'Data/Images/MNIST'
     in_channels = 1
     output_size = 10
     number_of_fold = 3
@@ -467,7 +467,7 @@ class MNISTSettings:
 
 
 class ShoesSettings:
-    path_to_data = 'C:\\Users\\User\\OneDrive\\tuks\\master\\code\\Data\\Images\\Shoes\\cleandData'
+    path_to_data = 'Data/Images/Shoes/cleandData'
     in_channels = 3
     output_size = 3
     number_of_fold = 3
