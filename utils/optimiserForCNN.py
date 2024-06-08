@@ -18,10 +18,10 @@ def train(params):
     kernel_size = params['kernel_size']
     kernel_stride = params['kernel_stride']
     for counter in range(1, params['number_of_convolutional_layers']):
-        if pool_size[counter] > out_channels[counter-1]:
-            pool_size[counter] = out_channels[counter-1]
-        if kernel_size[counter] > pool_size[counter-1]:
-            kernel_size[counter] = pool_size[counter-1]
+        if pool_size[counter] > out_channels[counter - 1]:
+            pool_size[counter] = out_channels[counter - 1]
+        if kernel_size[counter] > pool_size[counter - 1]:
+            kernel_size[counter] = pool_size[counter - 1]
         if kernel_stride[counter] > kernel_size[counter]:
             kernel_stride[counter] = kernel_size[counter]
     params['pool_size'] = pool_size
@@ -76,7 +76,7 @@ def train(params):
                 optimizer.step()
         loss += loss_function(network(x_testing), y_testing).item()
 
-    return loss/settings.number_of_fold
+    return loss / settings.number_of_fold
 
 
 datasets = ["Balls", "BeanLeafs", "Cifar10", "MNIST", "Shoes"]
@@ -87,38 +87,38 @@ for dataset in datasets:
     counter += 1
 names += str(counter) + ".\t All\n"
 
-while True:
-    nameIndex = int(input("Please select a dataset's name by enter a number:\n" + names))
-    if nameIndex == 0:
-        break
-    datasetNames = []
-    if nameIndex == 6:
-        datasetNames = datasets
-    else:
-        datasetNames.append(datasets[nameIndex - 1])
-    for dataset in datasetNames:
-        training_set, validation_set, settings = loadImagesDatasSet(dataset)
-        search = pyhopper.Search({
-            "batch_size": pyhopper.int(16, 1024, power_of=2),
-            "learning_rate": pyhopper.float(0.0005, 0.25, log=True),
-            "momentum": pyhopper.float(0.0005, 0.25, log=True),
-            "number_of_epochs": pyhopper.int(50, 500, multiple_of=50),
-            "number_of_convolutional_layers": pyhopper.int(2, 7),
-            "out_channels": pyhopper.int(2, 64, power_of=2, shape=7),
-            "kernel_size": pyhopper.int(2, 64, power_of=2, shape=7),
-            "kernel_stride": pyhopper.int(2, 64, power_of=2, shape=7),
-            "pool_size": pyhopper.int(2, 64, power_of=2, shape=7),
-            "pool_type": pyhopper.int(0, 1, shape=7),
-            "number_of_hidden_layers": pyhopper.int(2, 7),
-            "number_of_neurons_in_layers": pyhopper.int(50, 500, multiple_of=25, shape=7)
-        })
-        best_params = search.run(
-            train,
-            direction="min",
-            steps=150,
-            n_jobs="per-gpu",
-        )
+nameIndex = int(input("Please select a dataset's name by enter a number:\n" + names))
 
-        test_acc = train(best_params)
-        print(f"Tuned params test {dataset} accuracy: {test_acc:0.2f}%")
-        print(dataset + ": ", best_params)
+datasetNames = []
+if nameIndex == 6:
+    datasetNames = datasets
+else:
+    datasetNames.append(datasets[nameIndex - 1])
+for dataset in datasetNames:
+    print(f"Starting {dataset}")
+    training_set, validation_set, settings = loadImagesDatasSet(dataset)
+    search = pyhopper.Search({
+        "batch_size": pyhopper.int(16, 1024, power_of=2),
+        "learning_rate": pyhopper.float(0.0005, 0.25, log=True),
+        "momentum": pyhopper.float(0.0005, 0.25, log=True),
+        "number_of_epochs": pyhopper.int(50, 500, multiple_of=50),
+        "number_of_convolutional_layers": pyhopper.int(2, 7),
+        "out_channels": pyhopper.int(2, 64, power_of=2, shape=7),
+        "kernel_size": pyhopper.int(2, 64, power_of=2, shape=7),
+        "kernel_stride": pyhopper.int(2, 64, power_of=2, shape=7),
+        "pool_size": pyhopper.int(2, 64, power_of=2, shape=7),
+        "pool_type": pyhopper.int(0, 1, shape=7),
+        "number_of_hidden_layers": pyhopper.int(2, 7),
+        "number_of_neurons_in_layers": pyhopper.int(50, 500, multiple_of=25, shape=7)
+    })
+    best_params = search.run(
+        train,
+        direction="min",
+        steps=150,
+        n_jobs="per-gpu",
+        checkpoint_path="Checkpoint"
+    )
+
+    test_acc = train(best_params)
+    print(f"Tuned params test {dataset} loss: {test_acc:0.2f}")
+    print(dataset + ": ", best_params)
