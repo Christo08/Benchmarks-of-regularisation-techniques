@@ -1,5 +1,3 @@
-import math
-
 import pyhopper
 import torch
 import torch.optim as optim
@@ -13,23 +11,8 @@ from utils.lossFucntions import CustomCrossEntropyLoss
 
 
 def train(params):
-    pool_size = params['pool_size']
-    out_channels = params['out_channels']
-    kernel_size = params['kernel_size']
-    kernel_stride = params['kernel_stride']
-    for counter in range(1, params['number_of_convolutional_layers']):
-        if pool_size[counter] > out_channels[counter - 1]:
-            pool_size[counter] = out_channels[counter - 1]
-        if kernel_size[counter] > pool_size[counter - 1]:
-            kernel_size[counter] = pool_size[counter - 1]
-        if kernel_stride[counter] > kernel_size[counter]:
-            kernel_stride[counter] = kernel_size[counter]
-    params['pool_size'] = pool_size
-    params['out_channels'] = out_channels
-    params['kernel_size'] = kernel_size
-    params['kernel_stride'] = kernel_stride
-    labels = training_set[1]
-    features_tensor = training_set[0]
+    labels = training_set[1].float()
+    features_tensor = training_set[0].float()
     number_of_outputs = len(labels.unique().tolist())
     labels_tensor = clean_labels(labels, number_of_outputs)
 
@@ -48,24 +31,25 @@ def train(params):
 
         train_dataset = CustomDataset(x_training, y_training)
 
-        train_loader = DataLoader(train_dataset, batch_size=params["batch_size"], shuffle=True)
+        train_loader = DataLoader(train_dataset, batch_size=settings.batch_size, shuffle=True)
 
         network = Net(in_channels=settings.in_channels,
-                      number_of_convolutional_layers=params["number_of_convolutional_layers"],
-                      out_channels=params["out_channels"],
-                      kernel_size=params["kernel_size"],
-                      kernel_stride=params["kernel_stride"],
-                      pool_size=params["pool_size"],
-                      pool_type=params["pool_type"],
-                      number_of_hidden_layers=params["number_of_hidden_layers"],
-                      number_of_neurons_in_layers=params["number_of_neurons_in_layers"],
-                      output_size=number_of_outputs)
+                      number_of_convolutional_layers=settings.number_of_convolutional_layers,
+                      out_channels=settings.out_channels,
+                      kernel_size=settings.kernel_size,
+                      kernel_stride=settings.kernel_stride,
+                      pool_size=settings.pool_size,
+                      pool_type=settings.pool_type,
+                      number_of_hidden_layers=settings.number_of_hidden_layers,
+                      number_of_neurons_in_layers=settings.number_of_neurons_in_layers,
+                      output_size=number_of_outputs,
+                      dropout=params["dropout_layer"])
         if torch.cuda.is_available():
             network = network.cuda()
 
-        optimizer = optim.SGD(network.parameters(), lr=params["learning_rate"], momentum=params["momentum"])
+        optimizer = optim.SGD(network.parameters(), lr=settings.learning_rate, momentum=settings.momentum)
 
-        for epoch in range(params["number_of_epochs"]):
+        for epoch in range(settings.number_of_epochs):
             for batch in train_loader:
                 network.train()
                 training_outputs = network(batch['data'])
@@ -98,25 +82,14 @@ for dataset in datasetNames:
     print(f"Starting {dataset}")
     training_set, validation_set, settings = loadImagesDatasSet(dataset)
     search = pyhopper.Search({
-        "batch_size": pyhopper.int(16, 1024, power_of=2),
-        "learning_rate": pyhopper.float(0.0005, 0.25, log=True),
-        "momentum": pyhopper.float(0.0005, 0.25, log=True),
-        "number_of_epochs": pyhopper.int(50, 500, multiple_of=50),
-        "number_of_convolutional_layers": pyhopper.int(2, 7),
-        "out_channels": pyhopper.int(2, 64, power_of=2, shape=7),
-        "kernel_size": pyhopper.int(2, 64, power_of=2, shape=7),
-        "kernel_stride": pyhopper.int(2, 64, power_of=2, shape=7),
-        "pool_size": pyhopper.int(2, 64, power_of=2, shape=7),
-        "pool_type": pyhopper.int(0, 1, shape=7),
-        "number_of_hidden_layers": pyhopper.int(2, 7),
-        "number_of_neurons_in_layers": pyhopper.int(50, 500, multiple_of=25, shape=7)
+        "dropout_layer": pyhopper.float(0.005, 0.9, shape=settings.number_of_hidden_layers+settings.number_of_convolutional_layers)
     })
     best_params = search.run(
         train,
         direction="min",
-        steps=150,
+        steps=50,
         n_jobs="per-gpu",
-        checkpoint_path="Checkpoint"
+        checkpoint_path="CheckPoints/"+dataset+"Checkpoint"
     )
 
     test_acc = train(best_params)

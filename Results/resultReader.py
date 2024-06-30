@@ -8,6 +8,7 @@ import pandas as pd
 import json
 import seaborn as sns
 from tabulate import tabulate
+import scipy.stats as stats
 
 
 def load_files():
@@ -86,8 +87,10 @@ def load_dataset(event):
         plot_button['state'] = 'normal'
         if chart_type_combo.get() == "Box and whisker":
             show_avg_and_std_button['state'] = 'normal'
+            show_test_button['state'] = 'normal'
         else:
             show_avg_and_std_button['state'] = 'disabled'
+            show_test_button['state'] = 'disabled'
 
     except pd.errors.EmptyDataError:
         print("Selected file is empty.")
@@ -182,21 +185,23 @@ def plot_box_chart():
     else:
         for run in dataset['runs']:
             if find_and_checked_checkbox(run['method']):
-                xValue[run['method']] = []
+                method = run['method'].replace(" ", "\n")
+                xValue[method] = []
                 for fold in run["results"][metric_type_combo.get()][set_type_combo.get()]:
-                    xValue[run['method']].append(fold[-1])
+                    xValue[method].append(fold[-1])
     if metric_type_combo.get() == "f1_scores":
         baseline_mean = np.mean(xValue["Baseline"], axis=0)
         for run in dataset['runs']:
+            method = run['method'].replace(" ", "\n")
             if find_and_checked_checkbox(run['method']):
-                xValue[run['method']] = xValue[run['method']] - baseline_mean
+                xValue[method] = xValue[method] - baseline_mean
 
     fig, ax = plt.subplots(figsize=(15, 6))
 
-    sns.boxplot(data=xValue, orient='h', ax=ax)
+    sns.boxplot(data=xValue, orient='v', ax=ax)
 
-    ax.set_xlabel(set_type_combo.get().capitalize())
-    title = (chart_type_combo.get() + " of " + set_type_combo.get() + " " + metric_type_combo.get() + " for the " +
+    ax.set_ylabel(set_type_combo.get().capitalize()+" "+metric_type_combo.get().replace("_", " "))
+    title = (chart_type_combo.get() + " of " + set_type_combo.get() + " " + metric_type_combo.get().replace("_", " ") + " for the " +
              dataset_combo.get().lower() + " dataset")
     ax.set_title(title.capitalize())
     canvas = FigureCanvasTkAgg(fig, master=window)
@@ -258,12 +263,49 @@ def create_table():
     ]
 
     for count, name in enumerate(names):
-        avg = round(np.mean(values[count]), 5)
-        std = round(np.std(values[count]), 5)
+        avg = round(np.mean(values[count]), 3)
+        std = round(np.std(values[count]), 3)
         data.append([name, str(avg) + "+-" + str(std)])
 
     # Display the table
     print(tabulate(data, headers="firstrow"))
+
+def create_test():
+    global dataset
+    values = []
+    names = []
+    combos =[]
+
+    if set_type_combo.get() == "differences in training and testing":
+        for run in dataset['runs']:
+            if find_and_checked_checkbox(run['method']):
+                values.append([x[-1] - y[-1] for x, y in zip(run["results"][metric_type_combo.get()]["training"],
+                                                             run["results"][metric_type_combo.get()]["testing"])])
+                names.append(run["method"])
+    elif set_type_combo.get() == "differences in training and validation":
+        for run in dataset['runs']:
+            if find_and_checked_checkbox(run['method']):
+                values.append([x[-1] - y[-1] for x, y in zip(run["results"][metric_type_combo.get()]["training"],
+                                                             run["results"][metric_type_combo.get()]["validation"])])
+                names.append(run["method"])
+    else:
+        for run in dataset['runs']:
+            if find_and_checked_checkbox(run['method']):
+                values.append([])
+                for fold in run["results"][metric_type_combo.get()][set_type_combo.get()]:
+                    values[-1].append(fold[-1])
+                names.append(run["method"])
+
+    print("Dataset " + dataset_combo.get())
+    for count_one, name_one in enumerate(names):
+        print("\t"+name_one)
+        for count_two, name_two in enumerate(names):
+            if not(combos.__contains__(name_one+name_two)):
+                u_statistic, p_value = stats.mannwhitneyu(values[count_one], values[count_two], alternative='two-sided')
+                print(f"\t\t{name_two}: U-statistic = {u_statistic}, p-value = {round(p_value,3)}, reject = {p_value<0.005}")
+                combos.append(name_one+name_two)
+                combos.append(name_two+name_one)
+
 
 
 canvas = None
@@ -301,12 +343,15 @@ plot_button.grid(row=0, column=5, pady=10)
 show_avg_and_std_button = ttk.Button(window, text="Show data table", command=create_table, state='disabled')
 show_avg_and_std_button.grid(row=0, column=6, pady=10)
 
+show_test_button = ttk.Button(window, text="Show Mann-Whitney U Test", command=create_test, state='disabled')
+show_test_button.grid(row=0, column=7, pady=10)
+
 save_button = ttk.Button(window, text="Save Chart", command=save_charts, state='disabled')
-save_button.grid(row=0, column=7, pady=10)
+save_button.grid(row=0, column=8, pady=10)
 
 # Button to exit the application
 exit_button = ttk.Button(window, text="Exit", command=window.destroy)
-exit_button.grid(row=0, column=8, pady=10)
+exit_button.grid(row=0, column=9, pady=10)
 
 regularisation_method_checkboxes = []
 regularisation_method_checkboxes_values = []

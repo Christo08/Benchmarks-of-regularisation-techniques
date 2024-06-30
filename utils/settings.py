@@ -245,23 +245,23 @@ class BallsSettings:
     image_size = (224, 224)
     mean = (0.1804, 0.0762, -0.0507)
     std = (0.6568, 0.6530, 0.6908)
+    rotation = 360
 
     # first tuning
-    batch_size = 64
-    learning_rate = 0.03274305144410664
-    momentum = 0.0005000000000000001
+    batch_size = 16
+    learning_rate = 0.25
+    momentum = 0.008515960444937878
     number_of_epochs = 500
-    number_of_convolutional_layers = 1
-    out_channels = [64, 8, 2, 32, 4, 64, 32, 8, 8, 4]
-    kernel_size = [8, 2, 4, 4, 2, 4, 32, 4, 2, 16]
-    kernel_stride = [2, 2, 2, 2, 16, 2, 4, 2, 8, 16]
-    pool_size = [4, 2, 16, 4, 4, 2, 4, 8, 2, 2]
-    pool_type = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
-    number_of_hidden_layers = 1
-    number_of_neurons_in_layers = [150, 200, 300, 300, 850]
+    number_of_convolutional_layers = 10
+    out_channels = [ 2, 16,  4, 32,  4, 32,  8, 32,  8, 16,  4,  2,  2,  2,  2]
+    kernel_size = [2, 2, 2, 4, 2, 2, 2, 2, 2, 2, 2, 4, 4, 2, 2]
+    kernel_stride = [16,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  4,  4,  2]
+    pool_size =[ 4,  2,  8,  2, 16,  2,  2,  2,  4,  2,  8,  2,  2,  8,  8]
+    pool_type =[0, 1, 0, 0, 1, 1, 1, 0, 0, 1, 0, 0, 1, 1, 1]
+    number_of_hidden_layers = 7
+    number_of_neurons_in_layers = [ 300,   50, 1250,  150,  950,  450,  650,  200,   50, 1100]
 
     # second
-    rotation = 0
     dropout_layer = [0.5, 0.25, 0.1, 0.1, 0.25, 0.4, 0.3, 0.05]
     weight_decay = 0.25
     prune_amount = 0.001
@@ -304,23 +304,23 @@ class BeanLeafSettings:
     image_size = (500, 500)
     mean = (-0.0299, 0.0369, -0.3763)
     std = (0.4221, 0.4456, 0.4020)
+    rotation = 360
 
     # first tuning
-    batch_size = 32
-    learning_rate = 0.00303644029210212
-    momentum = 0.0625482730489677
-    number_of_epochs = 300
-    number_of_convolutional_layers = 1
-    out_channels = [16, 16, 16, 8, 2, 16, 8, 2, 2, 2]
-    kernel_size = [64, 2, 2, 8, 2, 2, 64, 64, 4, 2]
-    kernel_stride = [16, 2, 2, 4, 32, 4, 4, 8, 64, 16]
-    pool_size = [4, 8, 8, 2, 32, 16, 8, 32, 4, 8]
-    pool_type = [1, 1, 0, 1, 0, 0, 1, 0, 1, 0]
-    number_of_hidden_layers = 2
-    number_of_neurons_in_layers = [600, 1000, 750, 550, 750]
+    batch_size = 128
+    learning_rate = 0.25
+    momentum = 0.0005
+    number_of_epochs = 200
+    number_of_convolutional_layers = 2
+    out_channels = [ 4, 16,  8,  8,  4,  4,  2]
+    kernel_size = [2, 2, 2, 4, 2, 2, 2]
+    kernel_stride = [32,  2,  2, 16,  2, 32,  2]
+    pool_size = [ 4,  2,  2, 64, 32, 16, 64]
+    pool_type = [1, 1, 1, 1, 0, 1, 1]
+    number_of_hidden_layers = 3
+    number_of_neurons_in_layers = [475, 450, 425, 100, 450, 300, 200]
 
     # second
-    rotation = 0
     dropout_layer = [0.5, 0.25, 0.1, 0.1, 0.25, 0.4, 0.3, 0.05]
     weight_decay = 0.0025621157653690566
     prune_amount = 0.07553485715290663
@@ -363,20 +363,23 @@ class CifarSettings:
     mean = (125.3069, 122.9501, 113.8660)
     std = (62.9932, 62.0887, 66.7049)
     image_size = (32, 32)
+    rotation = 360
 
     # frist tuning
-    out_channels = [64, 128, 256, 512]
-    kernel_size = [7, 5, 5, 3]
-    stride = [10, 5, 5, 3]
-    pool_size = [(25, 5), (25, 5), (9, 3), (1, 1)]
-    hidden_layer_sizes = [512, 320, 80, 40]
-    number_of_epochs = 100
-    learning_rate = 0.01
-    momentum = 0.5
-    batch_size = 32
+    batch_size= 32
+    learning_rate= 0.0022766384261316466
+    momentum= 0.0979617594743901
+    number_of_epochs= 450
+    number_of_convolutional_layers= 5
+    out_channels= [32,  8, 16, 16, 32, 16, 16, 16,  8,  8,  4, 16,  2,  8,  2]
+    kernel_size= [ 4,  4,  2,  2,  2,  2,  2,  4, 32,  2,  4,  8,  2,  4, 16]
+    kernel_stride= [ 2,  2,  2,  2,  2,  2,  2,  2,  2,  2, 32, 16,  2,  4,  2]
+    pool_size= [ 8,  8,  8,  2,  2,  2,  2,  4,  2, 16,  2,  4, 32,  8,  2]
+    pool_type= [0, 0, 0, 1, 1, 1, 0, 0, 1, 1, 1, 1, 0, 1, 1]
+    number_of_hidden_layers= 5
+    number_of_neurons_in_layers= [ 550, 1200, 1250, 1350, 1500,  800,   50, 1350, 1500,  300]
 
     # second
-    rotation = 0
     dropout_layer = [0.5, 0.25, 0.1, 0.1, 0.25, 0.4, 0.3, 0.05]
     weight_decay = 0.25
     prune_amount = 0.07553485715290663
@@ -419,20 +422,23 @@ class MNISTSettings:
     mean = (0.1307,)
     std = (0.3081,)
     image_size = (28, 28)
+    rotation = 360
 
-    # frist tuning
-    out_channels = [64, 128, 256, 512]
-    kernel_size = [7, 5, 5, 3]
-    stride = [10, 5, 5, 3]
-    pool_size = [(25, 5), (25, 5), (9, 3), (1, 1)]
-    hidden_layer_sizes = [512, 320, 80, 40]
-    number_of_epochs = 100
-    learning_rate = 0.01
-    momentum = 0.5
-    batch_size = 32
+    # first tuning
+    batch_size= 128
+    learning_rate= 0.016127805912651637
+    momentum= 0.0750431997532428
+    number_of_epochs= 350
+    number_of_convolutional_layers= 5
+    out_channels= [ 3,  2, 17, 15, 19,  2, 21, 23, 16, 15, 20, 10,  6,  5, 10]
+    kernel_size= [28,  2,  2,  2,  2,  2,  4, 11,  9, 28, 19, 15, 16, 26, 10]
+    kernel_stride= [18,  2,  2,  2,  2,  2,  9,  9,  2,  7,  2, 19,  5, 13, 15]
+    pool_size= [ 3,  2,  2,  5,  2, 19, 14, 19,  4, 28, 19, 13,  4, 14,  2]
+    pool_type= [1, 1, 0, 1, 0, 1, 1, 1, 0, 0, 0, 0, 0, 0, 1]
+    number_of_hidden_layers= 10
+    number_of_neurons_in_layers= [1000,  700, 1250, 1200, 1150,  700, 1150,  850, 1000,  400]
 
     # second
-    rotation = 0
     dropout_layer = [0.5, 0.25, 0.1, 0.1, 0.25, 0.4, 0.3, 0.05]
     weight_decay = 0.25
     prune_amount = 0.07553485715290663
@@ -475,23 +481,23 @@ class ShoesSettings:
     image_size = (240, 240)
     mean = (0.4417, 0.4188, 0.3999)
     std = (0.6005, 0.6048, 0.6217)
+    rotation = 360
 
     # first tuning
-    batch_size = 32
-    learning_rate = 0.0087804470862461
-    momentum = 0.0755492952986247
-    number_of_epochs = 500
-    number_of_convolutional_layers = 1
-    out_channels = [64, 2, 8, 2, 2, 4, 2, 4, 4, 32]
-    kernel_size = [8, 2, 2, 2, 8, 4, 2, 8, 2, 64]
-    kernel_stride = [2, 2, 2, 2, 4, 32, 4, 32, 16, 8]
-    pool_size = [4, 2, 8, 4, 4, 32, 4, 4, 16, 2]
-    pool_type = [0, 0, 1, 0, 0, 0, 0, 1, 0, 0]
-    number_of_hidden_layers = 4
-    number_of_neurons_in_layers = [150, 900, 250, 800, 450]
+    batch_size= 16
+    learning_rate= 0.02582079536261265
+    momentum= 0.026584780497007854
+    number_of_epochs= 300
+    number_of_convolutional_layers= 2
+    out_channels= [64,  8,  4,  2,  2,  2, 64]
+    kernel_size= [16,  2,  2,  8,  4, 64,  4]
+    kernel_stride= [4, 2, 2, 2, 4, 2, 2]
+    pool_size= [ 4,  2,  2,  2, 16,  4,  4]
+    pool_type= [0, 1, 0, 1, 0, 0, 0]
+    number_of_hidden_layers= 2,
+    number_of_neurons_in_layers= [375, 300, 350, 475, 150, 325, 500]
 
     # second
-    rotation = 0
     dropout_layer = [0.5, 0.25, 0.1, 0.1, 0.25, 0.4, 0.3, 0.05]
     weight_decay = 0.001
     prune_amount = 0.028165123278217293
