@@ -9,7 +9,7 @@ from torch.utils.data import DataLoader
 from NNs.Numeric.basicNN import Net
 from utils.customDataset import CustomDataset
 from utils.dataLoader import clean_labels
-from utils.lossFucntions import CustomCrossEntropyRegularisationTermLoss, CustomCrossEntropyLoss
+from utils.lossFucntions import CustomCrossEntropyRegularisationTermLoss
 from utils.monitor import Monitor
 
 

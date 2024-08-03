@@ -168,7 +168,7 @@ class RainInAustraliaSettings:
     number_of_hidden_layers = 7
     momentum = 0.5
     number_of_epochs = 350
-    number_of_fold = 3
+    number_of_fold = 15
     path_to_data = "Data/Numeric/Rain in Australia/weatherAUS.csv"
     prune_amount = 0.5
     prune_epoch_interval = 41
@@ -241,33 +241,47 @@ class BallsSettings:
     path_to_data = 'Data/Images/Balls/cleanedData'
     in_channels = 3
     output_size = 30
-    number_of_fold = 3
+    number_of_fold = 15
     image_size = (224, 224)
     mean = (0.1804, 0.0762, -0.0507)
     std = (0.6568, 0.6530, 0.6908)
     rotation = 360
 
     # first tuning
-    batch_size = 16
+    batch_size = 240
     learning_rate = 0.25
     momentum = 0.008515960444937878
     number_of_epochs = 500
-    number_of_convolutional_layers = 10
-    out_channels = [ 2, 16,  4, 32,  4, 32,  8, 32,  8, 16,  4,  2,  2,  2,  2]
-    kernel_size = [2, 2, 2, 4, 2, 2, 2, 2, 2, 2, 2, 4, 4, 2, 2]
-    kernel_stride = [16,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  4,  4,  2]
-    pool_size =[ 4,  2,  8,  2, 16,  2,  2,  2,  4,  2,  8,  2,  2,  8,  8]
-    pool_type =[0, 1, 0, 0, 1, 1, 1, 0, 0, 1, 0, 0, 1, 1, 1]
-    number_of_hidden_layers = 7
-    number_of_neurons_in_layers = [ 300,   50, 1250,  150,  950,  450,  650,  200,   50, 1100]
+    number_of_convolutional_layers = 2
+    out_channels = [32, 32, 32]
+    padding = [0, 0, 0, 0, 0]
+    kernel_size = [3, 3, 3]
+    kernel_stride = [3, 3, 3]
+    pool_size = [2, 2, 2]
+    pool_type = [0, 0, 0]
+    number_of_hidden_layers = 2
+    number_of_neurons_in_layers = [50, 50]
+    # batch_size = 16
+    # learning_rate = 0.25
+    # momentum = 0.008515960444937878
+    # number_of_epochs = 500
+    # number_of_convolutional_layers = 12
+    # out_channels = [128, 16, 64, 32, 64, 32, 8, 32, 8, 16, 4, 8, 2, 2, 2]
+    # kernel_size = [4, 2, 8, 4, 2, 2, 2, 2, 2, 2, 2, 4, 4, 2, 2]
+    # kernel_stride = [16, 2, 8, 2, 2, 2, 2, 16, 2, 2, 2, 2, 4, 4, 2]
+    # pool_size = [4, 2, 8, 2, 16, 2, 2, 2, 4, 2, 8, 2, 2, 8, 8]
+    # pool_type = [0, 1, 0, 0, 1, 1, 1, 0, 0, 1, 0, 0, 1, 1, 1]
+    # number_of_hidden_layers = 10
+    # number_of_neurons_in_layers = [300, 50, 1250, 150, 950, 450, 650, 200, 50, 1100]
 
     # second
-    dropout_layer = [0.5, 0.25, 0.1, 0.1, 0.25, 0.4, 0.3, 0.05]
-    weight_decay = 0.25
-    prune_amount = 0.001
-    prune_epoch_interval = 71
-    weight_perturbation_amount = 0.001
-    weight_perturbation_epoch_interval = 33
+    dropout_layer = [0.36992542, 0.68516421, 0.30403681, 0.4702171, 0.39949961, 0.76684282, 0.005, 0.9, 0.56678831,
+                     0.86213659, 0.81971148, 0.51565969, 0.32065497, 0.9, 0.34356962, 0.51823739, 0.05712066]
+    weight_decay = 0.005
+    prune_amount = 0.4525
+    prune_epoch_interval = 75
+    weight_perturbation_amount = 0.5431264310571249
+    weight_perturbation_epoch_interval = 125
 
     def to_json_serializable(self):
         return {
@@ -276,16 +290,22 @@ class BallsSettings:
             "in_channels": self.in_channels,
             "output_size": self.output_size,
             "number_of_fold": self.number_of_fold,
-            "out_channels": self.out_channels,
-            "kernel_size": self.kernel_size,
-            "stride": self.stride,
-            "pool_size": self.pool_size,
-            "hidden_layer_sizes": self.hidden_layer_sizes,
-            "number_of_epochs": self.number_of_epochs,
+            "image_size": self.image_size,
+            "mean": self.mean,
+            "std": self.std,
+            "rotation": self.rotation,
+            "batch_size": self.batch_size,
             "learning_rate": self.learning_rate,
             "momentum": self.momentum,
-            "batch_size": self.batch_size,
-            "rotation": self.rotation,
+            "number_of_epochs": self.number_of_epochs,
+            "number_of_convolutional_layers": self.number_of_convolutional_layers,
+            "out_channels": self.out_channels,
+            "kernel_size": self.kernel_size,
+            "kernel_stride": self.kernel_stride,
+            "pool_size": self.pool_size,
+            "pool_type": self.pool_type,
+            "number_of_hidden_layers": self.number_of_hidden_layers,
+            "number_of_neurons_in_layers": self.number_of_neurons_in_layers,
             "dropout_layer": self.dropout_layer,
             "weight_decay": self.weight_decay,
             "prune_amount": self.prune_amount,
@@ -300,7 +320,7 @@ class BeanLeafSettings:
     path_to_data = 'Data/Images/Bean Leaf Lesions Classification/cleandData'
     in_channels = 3
     output_size = 3
-    number_of_fold = 3
+    number_of_fold = 15
     image_size = (500, 500)
     mean = (-0.0299, 0.0369, -0.3763)
     std = (0.4221, 0.4456, 0.4020)
@@ -312,21 +332,22 @@ class BeanLeafSettings:
     momentum = 0.0005
     number_of_epochs = 200
     number_of_convolutional_layers = 2
-    out_channels = [ 4, 16,  8,  8,  4,  4,  2]
+    out_channels = [4, 16, 8, 8, 4, 4, 2]
     kernel_size = [2, 2, 2, 4, 2, 2, 2]
-    kernel_stride = [32,  2,  2, 16,  2, 32,  2]
-    pool_size = [ 4,  2,  2, 64, 32, 16, 64]
+    padding = [0, 0, 0, 0, 0]
+    kernel_stride = [32, 2, 2, 16, 2, 32, 2]
+    pool_size = [4, 2, 2, 64, 32, 16, 64]
     pool_type = [1, 1, 1, 1, 0, 1, 1]
     number_of_hidden_layers = 3
     number_of_neurons_in_layers = [475, 450, 425, 100, 450, 300, 200]
 
     # second
-    dropout_layer = [0.5, 0.25, 0.1, 0.1, 0.25, 0.4, 0.3, 0.05]
-    weight_decay = 0.0025621157653690566
-    prune_amount = 0.07553485715290663
-    prune_epoch_interval = 38
-    weight_perturbation_amount = 0.001
-    weight_perturbation_epoch_interval = 33
+    dropout_layer = [0.01498299, 0.005, 0.49333206, 0.1299199, 0.37569948]
+    weight_decay = 0.2468714746993062
+    prune_amount = 0.36080350791359805
+    prune_epoch_interval = 30
+    weight_perturbation_amount = 0.1898631240451857
+    weight_perturbation_epoch_interval = 45
 
     def to_json_serializable(self):
         return {
@@ -335,16 +356,22 @@ class BeanLeafSettings:
             "in_channels": self.in_channels,
             "output_size": self.output_size,
             "number_of_fold": self.number_of_fold,
-            "out_channels": self.out_channels,
-            "kernel_size": self.kernel_size,
-            "stride": self.stride,
-            "pool_size": self.pool_size,
-            "hidden_layer_sizes": self.hidden_layer_sizes,
-            "number_of_epochs": self.number_of_epochs,
+            "image_size": self.image_size,
+            "mean": self.mean,
+            "std": self.std,
+            "rotation": self.rotation,
+            "batch_size": self.batch_size,
             "learning_rate": self.learning_rate,
             "momentum": self.momentum,
-            "batch_size": self.batch_size,
-            "rotation": self.rotation,
+            "number_of_epochs": self.number_of_epochs,
+            "number_of_convolutional_layers": self.number_of_convolutional_layers,
+            "out_channels": self.out_channels,
+            "kernel_size": self.kernel_size,
+            "kernel_stride": self.kernel_stride,
+            "pool_size": self.pool_size,
+            "pool_type": self.pool_type,
+            "number_of_hidden_layers": self.number_of_hidden_layers,
+            "number_of_neurons_in_layers": self.number_of_neurons_in_layers,
             "dropout_layer": self.dropout_layer,
             "weight_decay": self.weight_decay,
             "prune_amount": self.prune_amount,
@@ -358,34 +385,35 @@ class CifarSettings:
     path_to_data = 'Data/Images/Cifar-10'
     in_channels = 3
     output_size = 10
-    number_of_fold = 3
+    number_of_fold = 15
     log_interval = 10
     mean = (125.3069, 122.9501, 113.8660)
     std = (62.9932, 62.0887, 66.7049)
     image_size = (32, 32)
     rotation = 360
 
-    # frist tuning
-    batch_size= 32
-    learning_rate= 0.0022766384261316466
-    momentum= 0.0979617594743901
-    number_of_epochs= 450
-    number_of_convolutional_layers= 5
-    out_channels= [32,  8, 16, 16, 32, 16, 16, 16,  8,  8,  4, 16,  2,  8,  2]
-    kernel_size= [ 4,  4,  2,  2,  2,  2,  2,  4, 32,  2,  4,  8,  2,  4, 16]
-    kernel_stride= [ 2,  2,  2,  2,  2,  2,  2,  2,  2,  2, 32, 16,  2,  4,  2]
-    pool_size= [ 8,  8,  8,  2,  2,  2,  2,  4,  2, 16,  2,  4, 32,  8,  2]
-    pool_type= [0, 0, 0, 1, 1, 1, 0, 0, 1, 1, 1, 1, 0, 1, 1]
-    number_of_hidden_layers= 5
-    number_of_neurons_in_layers= [ 550, 1200, 1250, 1350, 1500,  800,   50, 1350, 1500,  300]
+    # first tuning
+    batch_size = 32
+    learning_rate = 0.0022766384261316466
+    momentum = 0.0979617594743901
+    number_of_epochs = 450
+    number_of_convolutional_layers = 5
+    out_channels = [128, 256, 512, 512, 256]
+    padding = [1, 1, 1, 1, 1]
+    kernel_size = [3, 3, 3, 3, 3]
+    kernel_stride = [1, 1, 1, 1, 1]
+    pool_size = [2, 2, 2, 2, 2]
+    pool_type = [0, 0, 0, 1, 1]
+    number_of_hidden_layers = 3
+    number_of_neurons_in_layers = [512, 256, 128]
 
     # second
-    dropout_layer = [0.5, 0.25, 0.1, 0.1, 0.25, 0.4, 0.3, 0.05]
-    weight_decay = 0.25
-    prune_amount = 0.07553485715290663
-    prune_epoch_interval = 38
-    weight_perturbation_amount = 0.001
-    weight_perturbation_epoch_interval = 33
+    dropout_layer = [0.3, 0.3, 0, 0, 0.3, 0.5, 0.5, 0.5]
+    weight_decay = 0.37691151817402463
+    prune_amount = 0.4265539032653854
+    prune_epoch_interval = 75
+    weight_perturbation_amount = 0.5427130779154189
+    weight_perturbation_epoch_interval = 30
 
     def to_json_serializable(self):
         return {
@@ -394,16 +422,22 @@ class CifarSettings:
             "in_channels": self.in_channels,
             "output_size": self.output_size,
             "number_of_fold": self.number_of_fold,
-            "out_channels": self.out_channels,
-            "kernel_size": self.kernel_size,
-            "stride": self.stride,
-            "pool_size": self.pool_size,
-            "hidden_layer_sizes": self.hidden_layer_sizes,
-            "number_of_epochs": self.number_of_epochs,
+            "image_size": self.image_size,
+            "mean": self.mean,
+            "std": self.std,
+            "rotation": self.rotation,
+            "batch_size": self.batch_size,
             "learning_rate": self.learning_rate,
             "momentum": self.momentum,
-            "batch_size": self.batch_size,
-            "rotation": self.rotation,
+            "number_of_epochs": self.number_of_epochs,
+            "number_of_convolutional_layers": self.number_of_convolutional_layers,
+            "out_channels": self.out_channels,
+            "kernel_size": self.kernel_size,
+            "kernel_stride": self.kernel_stride,
+            "pool_size": self.pool_size,
+            "pool_type": self.pool_type,
+            "number_of_hidden_layers": self.number_of_hidden_layers,
+            "number_of_neurons_in_layers": self.number_of_neurons_in_layers,
             "dropout_layer": self.dropout_layer,
             "weight_decay": self.weight_decay,
             "prune_amount": self.prune_amount,
@@ -417,34 +451,36 @@ class MNISTSettings:
     path_to_data = 'Data/Images/MNIST'
     in_channels = 1
     output_size = 10
-    number_of_fold = 3
-    log_interval = 10
+    number_of_fold = 15
+    log_interval = 5
     mean = (0.1307,)
     std = (0.3081,)
     image_size = (28, 28)
     rotation = 360
 
     # first tuning
-    batch_size= 128
-    learning_rate= 0.016127805912651637
-    momentum= 0.0750431997532428
-    number_of_epochs= 350
-    number_of_convolutional_layers= 5
-    out_channels= [ 3,  2, 17, 15, 19,  2, 21, 23, 16, 15, 20, 10,  6,  5, 10]
-    kernel_size= [28,  2,  2,  2,  2,  2,  4, 11,  9, 28, 19, 15, 16, 26, 10]
-    kernel_stride= [18,  2,  2,  2,  2,  2,  9,  9,  2,  7,  2, 19,  5, 13, 15]
-    pool_size= [ 3,  2,  2,  5,  2, 19, 14, 19,  4, 28, 19, 13,  4, 14,  2]
-    pool_type= [1, 1, 0, 1, 0, 1, 1, 1, 0, 0, 0, 0, 0, 0, 1]
-    number_of_hidden_layers= 10
-    number_of_neurons_in_layers= [1000,  700, 1250, 1200, 1150,  700, 1150,  850, 1000,  400]
+    batch_size = 256
+    learning_rate = 0.016127805912651637
+    momentum = 0.0750431997532428
+    number_of_epochs = 50
+    number_of_convolutional_layers = 5
+    out_channels = [64, 64, 128, 128, 256]
+    padding = [1, 1, 1, 1, 1]
+    kernel_size = [3, 3, 3, 3, 2]
+    kernel_stride = [1, 1, 1, 1, 1]
+    pool_size = [2, 2, 2, 2, 2]
+    pool_type = [1, 1, 0, 1, 0]
+    number_of_hidden_layers = 2
+    number_of_neurons_in_layers = [512, 64]
 
     # second
-    dropout_layer = [0.5, 0.25, 0.1, 0.1, 0.25, 0.4, 0.3, 0.05]
-    weight_decay = 0.25
-    prune_amount = 0.07553485715290663
-    prune_epoch_interval = 38
-    weight_perturbation_amount = 0.001
-    weight_perturbation_epoch_interval = 33
+    dropout_layer = [0.005, 0.005, 0.58648739, 0.39124384, 0.005, 0.10003111, 0.73824494, 0.23664286, 0.44752391,
+                     0.66717193, 0.60861604, 0.51888303]
+    weight_decay = 0.005
+    prune_amount = 0.3532442646432387
+    prune_epoch_interval = 25
+    weight_perturbation_amount = 0.29107294774176273
+    weight_perturbation_epoch_interval = 25
 
     def to_json_serializable(self):
         return {
@@ -453,16 +489,22 @@ class MNISTSettings:
             "in_channels": self.in_channels,
             "output_size": self.output_size,
             "number_of_fold": self.number_of_fold,
-            "out_channels": self.out_channels,
-            "kernel_size": self.kernel_size,
-            "stride": self.stride,
-            "pool_size": self.pool_size,
-            "hidden_layer_sizes": self.hidden_layer_sizes,
-            "number_of_epochs": self.number_of_epochs,
+            "image_size": self.image_size,
+            "mean": self.mean,
+            "std": self.std,
+            "rotation": self.rotation,
+            "batch_size": self.batch_size,
             "learning_rate": self.learning_rate,
             "momentum": self.momentum,
-            "batch_size": self.batch_size,
-            "rotation": self.rotation,
+            "number_of_epochs": self.number_of_epochs,
+            "number_of_convolutional_layers": self.number_of_convolutional_layers,
+            "out_channels": self.out_channels,
+            "kernel_size": self.kernel_size,
+            "kernel_stride": self.kernel_stride,
+            "pool_size": self.pool_size,
+            "pool_type": self.pool_type,
+            "number_of_hidden_layers": self.number_of_hidden_layers,
+            "number_of_neurons_in_layers": self.number_of_neurons_in_layers,
             "dropout_layer": self.dropout_layer,
             "weight_decay": self.weight_decay,
             "prune_amount": self.prune_amount,
@@ -476,7 +518,7 @@ class ShoesSettings:
     path_to_data = 'Data/Images/Shoes/cleandData'
     in_channels = 3
     output_size = 3
-    number_of_fold = 3
+    number_of_fold = 15
     log_interval = 10
     image_size = (240, 240)
     mean = (0.4417, 0.4188, 0.3999)
@@ -484,26 +526,27 @@ class ShoesSettings:
     rotation = 360
 
     # first tuning
-    batch_size= 16
-    learning_rate= 0.02582079536261265
-    momentum= 0.026584780497007854
-    number_of_epochs= 300
-    number_of_convolutional_layers= 2
-    out_channels= [64,  8,  4,  2,  2,  2, 64]
-    kernel_size= [16,  2,  2,  8,  4, 64,  4]
-    kernel_stride= [4, 2, 2, 2, 4, 2, 2]
-    pool_size= [ 4,  2,  2,  2, 16,  4,  4]
-    pool_type= [0, 1, 0, 1, 0, 0, 0]
-    number_of_hidden_layers= 2,
-    number_of_neurons_in_layers= [375, 300, 350, 475, 150, 325, 500]
+    batch_size = 16
+    learning_rate = 0.02582079536261265
+    momentum = 0.026584780497007854
+    number_of_epochs = 300
+    number_of_convolutional_layers = 2
+    out_channels = [64, 8, 4, 2, 2, 2, 64]
+    padding = [0, 0, 0, 0, 0]
+    kernel_size = [16, 2, 2, 8, 4, 64, 4]
+    kernel_stride = [4, 2, 2, 2, 4, 2, 2]
+    pool_size = [4, 2, 2, 2, 16, 4, 4]
+    pool_type = [0, 1, 0, 1, 0, 0, 0]
+    number_of_hidden_layers = 2
+    number_of_neurons_in_layers = [375, 300, 350, 475, 150, 325, 500]
 
     # second
-    dropout_layer = [0.5, 0.25, 0.1, 0.1, 0.25, 0.4, 0.3, 0.05]
-    weight_decay = 0.001
-    prune_amount = 0.028165123278217293
-    prune_epoch_interval = 100
-    weight_perturbation_amount = 0.001
-    weight_perturbation_epoch_interval = 33
+    dropout_layer = [0.005, 0.00631845, 0.79099724, 0.05663903]
+    weight_decay = 0.3795936702697606
+    prune_amount = 0.5644989628731999
+    prune_epoch_interval = 65
+    weight_perturbation_amount = 0.7429679231264744
+    weight_perturbation_epoch_interval = 55
 
     def to_json_serializable(self):
         return {
@@ -512,16 +555,22 @@ class ShoesSettings:
             "in_channels": self.in_channels,
             "output_size": self.output_size,
             "number_of_fold": self.number_of_fold,
-            "out_channels": self.out_channels,
-            "kernel_size": self.kernel_size,
-            "stride": self.stride,
-            "pool_size": self.pool_size,
-            "hidden_layer_sizes": self.hidden_layer_sizes,
-            "number_of_epochs": self.number_of_epochs,
+            "image_size": self.image_size,
+            "mean": self.mean,
+            "std": self.std,
+            "rotation": self.rotation,
+            "batch_size": self.batch_size,
             "learning_rate": self.learning_rate,
             "momentum": self.momentum,
-            "batch_size": self.batch_size,
-            "rotation": self.rotation,
+            "number_of_epochs": self.number_of_epochs,
+            "number_of_convolutional_layers": self.number_of_convolutional_layers,
+            "out_channels": self.out_channels,
+            "kernel_size": self.kernel_size,
+            "kernel_stride": self.kernel_stride,
+            "pool_size": self.pool_size,
+            "pool_type": self.pool_type,
+            "number_of_hidden_layers": self.number_of_hidden_layers,
+            "number_of_neurons_in_layers": self.number_of_neurons_in_layers,
             "dropout_layer": self.dropout_layer,
             "weight_decay": self.weight_decay,
             "prune_amount": self.prune_amount,

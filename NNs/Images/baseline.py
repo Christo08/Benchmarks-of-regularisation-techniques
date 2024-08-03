@@ -20,25 +20,28 @@ def run(dataset_name, settings, training_set, validation_set):
 
     torch.manual_seed(seed)
 
-    labels = training_set[1]
-    features_tensor = training_set[0]
+    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+
+    labels = training_set[1].float()
+    features_tensor = training_set[0].float()
+
     number_of_outputs = len(labels.unique().tolist())
     labels_tensor = clean_labels(labels, number_of_outputs)
 
-    x_validation = validation_set[0]
-    y_validation = clean_labels(validation_set[1], number_of_outputs)
-
-    if torch.cuda.is_available():
-        features_tensor = features_tensor.cuda()
-        labels_tensor = labels_tensor.cuda()
-        x_validation = x_validation.cuda()
-        y_validation = y_validation.cuda()
+    y_validation = clean_labels(validation_set[1].float(), number_of_outputs)
+    x_validation = validation_set[0].float()
 
     kf = KFold(n_splits=settings.number_of_fold, shuffle=True, random_state=seed)
 
     loss_function = CustomCrossEntropyLoss()
 
-    monitor = Monitor("Baseline", dataset_name, seed, loss_function, settings.log_interval, x_validation, y_validation)
+    monitor = Monitor(method="Baseline",
+                      dataset_name=dataset_name,
+                      seed=seed,
+                      loss_function=loss_function,
+                      log_interval=settings.log_interval,
+                      x_validation=x_validation,
+                      y_validation=y_validation)
 
     start_time = time.time()
 
@@ -52,8 +55,10 @@ def run(dataset_name, settings, training_set, validation_set):
         train_loader = DataLoader(train_dataset, batch_size=settings.batch_size, shuffle=True)
 
         network = Net(in_channels=settings.in_channels,
+                      input_image_size=settings.image_size,
                       number_of_convolutional_layers=settings.number_of_convolutional_layers,
                       out_channels=settings.out_channels,
+                      padding=settings.padding,
                       kernel_size=settings.kernel_size,
                       kernel_stride=settings.kernel_stride,
                       pool_size=settings.pool_size,
@@ -65,17 +70,26 @@ def run(dataset_name, settings, training_set, validation_set):
             network = network.cuda()
 
         optimizer = optim.SGD(network.parameters(), lr=settings.learning_rate, momentum=settings.momentum)
+        monitor.set_dataset(x_training, y_training, x_testing, y_testing, fold)
 
         for epoch in range(settings.number_of_epochs):
+            network = network.to(device)
             for batch in train_loader:
+                batch_data = batch['data'].to(device)
+                batch_label = batch['label'].to(device)
+
                 network.train()
-                training_outputs = network(batch['data'])
-                training_loss = loss_function(training_outputs, batch['label'])
+                training_outputs = network(batch_data)
+                training_loss = loss_function(training_outputs, batch_label)
 
                 optimizer.zero_grad()
                 training_loss.backward()
                 optimizer.step()
-
+                if torch.cuda.is_available():
+                    del batch_data
+                    del batch_label
+                    torch.cuda.empty_cache()
+            monitor.evaluate(network, epoch)
 
     end_time = time.time()
     print('Finished Training')

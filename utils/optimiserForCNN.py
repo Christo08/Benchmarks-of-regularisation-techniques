@@ -1,3 +1,7 @@
+import math
+import sys
+sys.path.append('/mnt/lustre/users/copperman/Benchmarks-of-regularisation-techniques')
+
 import pyhopper
 import torch
 import torch.optim as optim
@@ -8,6 +12,7 @@ from NNs.Images.basicCNN import Net
 from utils.customDataset import CustomDataset
 from utils.dataLoader import clean_labels, loadImagesDatasSet
 from utils.lossFucntions import CustomCrossEntropyLoss
+from utils.lossFucntions import CustomCrossEntropyRegularisationTermLoss
 
 
 def train(params):
@@ -22,7 +27,7 @@ def train(params):
 
     kf = KFold(n_splits=settings.number_of_fold, shuffle=True)
 
-    loss_function = CustomCrossEntropyLoss()
+    loss_function = CustomCrossEntropyRegularisationTermLoss(params["weight_decay"])
     loss = 0
     for fold, (train_index, test_index) in enumerate(kf.split(features_tensor)):
         # Initialize the network, optimizer, and loss function
@@ -43,7 +48,8 @@ def train(params):
                       number_of_hidden_layers=settings.number_of_hidden_layers,
                       number_of_neurons_in_layers=settings.number_of_neurons_in_layers,
                       output_size=number_of_outputs,
-                      dropout=params["dropout_layer"])
+                      input_image_size=settings.image_size,
+                      padding=settings.padding,)
         if torch.cuda.is_available():
             network = network.cuda()
 
@@ -53,12 +59,12 @@ def train(params):
             for batch in train_loader:
                 network.train()
                 training_outputs = network(batch['data'])
-                training_loss = loss_function(training_outputs, batch['label'])
+                training_loss = loss_function(training_outputs, batch['label'], network)
 
                 optimizer.zero_grad()
                 training_loss.backward()
                 optimizer.step()
-        loss += loss_function(network(x_testing), y_testing).item()
+        loss += loss_function(network(x_testing), y_testing, network).item()
 
     return loss / settings.number_of_fold
 
@@ -71,25 +77,27 @@ for dataset in datasets:
     counter += 1
 names += str(counter) + ".\t All\n"
 
-nameIndex = int(input("Please select a dataset's name by enter a number:\n" + names))
+nameIndex = input("Please select a dataset's name by enter a number:\n" + names)
 
 datasetNames = []
-if nameIndex == 6:
+if nameIndex == "6":
     datasetNames = datasets
 else:
-    datasetNames.append(datasets[nameIndex - 1])
+    indexes = nameIndex.split(" ")
+    for index in indexes:
+        datasetNames.append(datasets[int(index) - 1])
 for dataset in datasetNames:
     print(f"Starting {dataset}")
-    training_set, validation_set, settings = loadImagesDatasSet(dataset)
+    training_set, validation_set, settings = loadImagesDatasSet(dataset, False)
     search = pyhopper.Search({
-        "dropout_layer": pyhopper.float(0.005, 0.9, shape=settings.number_of_hidden_layers+settings.number_of_convolutional_layers)
+        "weight_decay": pyhopper.float(0.005, 0.9)
     })
     best_params = search.run(
         train,
         direction="min",
         steps=50,
         n_jobs="per-gpu",
-        checkpoint_path="CheckPoints/"+dataset+"Checkpoint"
+        checkpoint_path="C:\\Users\\User\\OneDrive\\tuks\\master\\code\\CheckPoints\\"+dataset+"Checkpoint"
     )
 
     test_acc = train(best_params)

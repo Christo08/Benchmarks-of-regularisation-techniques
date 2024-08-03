@@ -1,9 +1,7 @@
 import random
 import time
-from datetime import datetime
 
 import torch
-import torch.nn as nn
 import torch.optim as optim
 from sklearn.model_selection import KFold
 from torch.utils.data import DataLoader

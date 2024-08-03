@@ -45,7 +45,7 @@ def loadNumericDataSet(dataset_name):
     return training_set, validation_set, setting
 
 
-def loadImagesDatasSet(dataset_name):
+def loadImagesDatasSet(dataset_name, needGeometricTransformation):
     if dataset_name == 'Balls':
         setting = BallsSettings()
     elif dataset_name == 'BeanLeafs':
@@ -57,11 +57,19 @@ def loadImagesDatasSet(dataset_name):
     else:
         setting = ShoesSettings()
 
-    transform = torchvision.transforms.Compose([
-        torchvision.transforms.Resize(setting.image_size),  # Resize the image
-        torchvision.transforms.ToTensor(),
-        torchvision.transforms.Normalize(setting.mean, setting.std)
-    ])
+    if needGeometricTransformation and dataset_name != 'MNIST':
+        transform = torchvision.transforms.Compose([
+            torchvision.transforms.Resize(setting.image_size),  # Resize the image
+            torchvision.transforms.ToTensor(),
+            torchvision.transforms.Normalize(setting.mean, setting.std),
+            torchvision.transforms.RandomRotation(degrees=(-180, 180))
+        ])
+    else:
+        transform = torchvision.transforms.Compose([
+            torchvision.transforms.Resize(setting.image_size),  # Resize the image
+            torchvision.transforms.ToTensor(),
+            torchvision.transforms.Normalize(setting.mean, setting.std)
+        ])
 
     if dataset_name == 'Cifar10':
         dataset = torchvision.datasets.CIFAR10(root=setting.path_to_data, download=True, transform=transform)
@@ -73,7 +81,7 @@ def loadImagesDatasSet(dataset_name):
         validationSetJson = json.load(file)
 
     if dataset_name == 'MNIST':
-        data, labels = torch.tensor(dataset.data), torch.tensor(dataset.targets)
+        data, labels = dataset.data.clone().detach(), dataset.targets.clone().detach()
         features = data.unsqueeze(1)
     elif dataset_name == "Cifar10":
         data, labels = torch.tensor(dataset.data), torch.tensor(dataset.targets)
