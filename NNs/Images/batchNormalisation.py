@@ -67,32 +67,27 @@ def run(dataset_name, settings, training_set, validation_set):
                       number_of_neurons_in_layers=settings.number_of_neurons_in_layers,
                       output_size=number_of_outputs,
                       batch_norm=True)
-        if torch.cuda.is_available():
-            network = network.cuda()
+        network = network.to(device)
 
         optimizer = optim.SGD(network.parameters(), lr=settings.learning_rate, momentum=settings.momentum)
         monitor.set_dataset(x_training, y_training, x_testing, y_testing, fold)
 
         for epoch in range(settings.number_of_epochs):
             for batch in train_loader:
+                batch_data = batch['data'].to(device)
+                batch_label = batch['label'].to(device)
+
                 network.train()
-                training_outputs = network(batch['data'])
-                training_loss = loss_function(training_outputs, batch['label'])
+                training_outputs = network(batch_data)
+                training_loss = loss_function(training_outputs, batch_label)
 
                 optimizer.zero_grad()
                 training_loss.backward()
                 optimizer.step()
-                del training_outputs
-                del batch
+
+                del batch_data, batch_label
                 torch.cuda.empty_cache()
             monitor.evaluate(network, epoch)
-            torch.cuda.empty_cache()
-        del network
-        del x_training
-        del y_training
-        del x_testing
-        del y_testing
-        torch.cuda.empty_cache()
 
     end_time = time.time()
     print('Finished Training')

@@ -277,11 +277,11 @@ class BallsSettings:
     # second
     dropout_layer = [0.36992542, 0.68516421, 0.30403681, 0.4702171, 0.39949961, 0.76684282, 0.005, 0.9, 0.56678831,
                      0.86213659, 0.81971148, 0.51565969, 0.32065497, 0.9, 0.34356962, 0.51823739, 0.05712066]
-    weight_decay = 0.005
+    weight_decay = 0.002
     prune_amount = 0.4525
     prune_epoch_interval = 75
-    weight_perturbation_amount = 0.5431264310571249
-    weight_perturbation_epoch_interval = 125
+    weight_perturbation_amount = 0.1
+    weight_perturbation_epoch_interval = 25
 
     def to_json_serializable(self):
         return {
@@ -343,11 +343,11 @@ class BeanLeafSettings:
 
     # second
     dropout_layer = [0.01498299, 0.005, 0.49333206, 0.1299199, 0.37569948]
-    weight_decay = 0.2468714746993062
+    weight_decay = 0.001
     prune_amount = 0.36080350791359805
     prune_epoch_interval = 30
-    weight_perturbation_amount = 0.1898631240451857
-    weight_perturbation_epoch_interval = 45
+    weight_perturbation_amount = 0.25
+    weight_perturbation_epoch_interval = 25
 
     def to_json_serializable(self):
         return {
@@ -396,7 +396,7 @@ class CifarSettings:
     batch_size = 32
     learning_rate = 0.0022766384261316466
     momentum = 0.0979617594743901
-    number_of_epochs = 450
+    number_of_epochs = 200
     number_of_convolutional_layers = 5
     out_channels = [128, 256, 512, 512, 256]
     padding = [1, 1, 1, 1, 1]
@@ -409,11 +409,78 @@ class CifarSettings:
 
     # second
     dropout_layer = [0.3, 0.3, 0, 0, 0.3, 0.5, 0.5, 0.5]
-    weight_decay = 0.37691151817402463
+    weight_decay = 0.001
     prune_amount = 0.4265539032653854
     prune_epoch_interval = 75
-    weight_perturbation_amount = 0.5427130779154189
-    weight_perturbation_epoch_interval = 30
+    weight_perturbation_amount = 0.01
+    weight_perturbation_epoch_interval = 5
+
+    def to_json_serializable(self):
+        return {
+            "log_interval": self.log_interval,
+            "path_to_data": self.path_to_data,
+            "in_channels": self.in_channels,
+            "output_size": self.output_size,
+            "number_of_fold": self.number_of_fold,
+            "image_size": self.image_size,
+            "mean": self.mean,
+            "std": self.std,
+            "rotation": self.rotation,
+            "batch_size": self.batch_size,
+            "learning_rate": self.learning_rate,
+            "momentum": self.momentum,
+            "number_of_epochs": self.number_of_epochs,
+            "number_of_convolutional_layers": self.number_of_convolutional_layers,
+            "out_channels": self.out_channels,
+            "kernel_size": self.kernel_size,
+            "kernel_stride": self.kernel_stride,
+            "pool_size": self.pool_size,
+            "pool_type": self.pool_type,
+            "number_of_hidden_layers": self.number_of_hidden_layers,
+            "number_of_neurons_in_layers": self.number_of_neurons_in_layers,
+            "dropout_layer": self.dropout_layer,
+            "weight_decay": self.weight_decay,
+            "prune_amount": self.prune_amount,
+            "prune_epoch_interval": self.prune_epoch_interval,
+            "weight_perturbation_amount": self.weight_perturbation_amount,
+            "weight_perturbation_epoch_interval": self.weight_perturbation_epoch_interval
+        }
+
+
+class FashionMNISTSettings:
+    path_to_data = 'Data/Images/FashionMNIST'
+    in_channels = 1
+    output_size = 10
+    number_of_fold = 15
+    log_interval = 5
+    mean = (0.1307,)
+    std = (0.3081,)
+    image_size = (28, 28)
+    rotation = 360
+
+    # first tuning
+    batch_size = 256
+    learning_rate = 0.016127805912651637
+    momentum = 0.0750431997532428
+    number_of_epochs = 100
+    number_of_convolutional_layers = 5
+    out_channels = [64, 64, 128, 128, 256]
+    padding = [1, 1, 1, 1, 1]
+    kernel_size = [3, 3, 3, 3, 2]
+    kernel_stride = [1, 1, 1, 1, 1]
+    pool_size = [2, 2, 2, 2, 2]
+    pool_type = [1, 1, 0, 1, 0]
+    number_of_hidden_layers = 2
+    number_of_neurons_in_layers = [512, 64]
+
+    # second
+    dropout_layer = [0.005, 0.005, 0.58648739, 0.39124384, 0.005, 0.10003111, 0.73824494, 0.23664286, 0.44752391,
+                     0.66717193, 0.60861604, 0.51888303]
+    weight_decay = 0.005
+    prune_amount = 0.3532442646432387
+    prune_epoch_interval = 25
+    weight_perturbation_amount = 0.05
+    weight_perturbation_epoch_interval = 20
 
     def to_json_serializable(self):
         return {
@@ -451,7 +518,7 @@ class MNISTSettings:
     path_to_data = 'Data/Images/MNIST'
     in_channels = 1
     output_size = 10
-    number_of_fold = 15
+    number_of_fold = 3
     log_interval = 5
     mean = (0.1307,)
     std = (0.3081,)
@@ -462,7 +529,7 @@ class MNISTSettings:
     batch_size = 256
     learning_rate = 0.016127805912651637
     momentum = 0.0750431997532428
-    number_of_epochs = 50
+    number_of_epochs = 100
     number_of_convolutional_layers = 5
     out_channels = [64, 64, 128, 128, 256]
     padding = [1, 1, 1, 1, 1]
@@ -479,8 +546,8 @@ class MNISTSettings:
     weight_decay = 0.005
     prune_amount = 0.3532442646432387
     prune_epoch_interval = 25
-    weight_perturbation_amount = 0.29107294774176273
-    weight_perturbation_epoch_interval = 25
+    weight_perturbation_amount = 0.05
+    weight_perturbation_epoch_interval = 20
 
     def to_json_serializable(self):
         return {
@@ -542,11 +609,11 @@ class ShoesSettings:
 
     # second
     dropout_layer = [0.005, 0.00631845, 0.79099724, 0.05663903]
-    weight_decay = 0.3795936702697606
+    weight_decay = 0.01
     prune_amount = 0.5644989628731999
     prune_epoch_interval = 65
-    weight_perturbation_amount = 0.7429679231264744
-    weight_perturbation_epoch_interval = 55
+    weight_perturbation_amount = 0.05
+    weight_perturbation_epoch_interval = 10
 
     def to_json_serializable(self):
         return {

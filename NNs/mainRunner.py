@@ -17,9 +17,7 @@ from NNs.Images.weightPerturbation import run as WeightPerturbationImagesRun
 from NNs.Numeric.baseline import run as BaselineNumericRun
 from NNs.Numeric.batchNormalisation import run as BatchNormalisationNumericRun
 from NNs.Numeric.dropout import run as DropoutNumericRun
-# from NNs.Numeric.l1loss import run as L1LossNumericRun
 from NNs.Numeric.layerNormalisation import run as LayerNormalisationNumericRun
-# from NNs.Numeric.mseLoss import run as MSELossNumericRun
 from NNs.Numeric.pruning import run as PruningNumericRun
 from NNs.Numeric.regularisationTerm import run as RegularisationTermNumericRun
 from NNs.Numeric.smote import run as SMOTENumericRun
@@ -39,7 +37,7 @@ def save_runs(file, datasetsRuns):
 
 def selectDataset(datasetType):
     if datasetType == "1":
-        datasets = ["Balls", "BeanLeafs", "Cifar10", "MNIST", "Shoes"]
+        datasets = ["Balls", "BeanLeafs", "FashionMNIST", "Cifar10", "MNIST", "Shoes"]
     else:
         datasets = ["Diabetes", "LiverCirrhosis", "Magic", "MfeatPixel", "WhiteWineQuality"]
 

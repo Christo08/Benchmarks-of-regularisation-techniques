@@ -10,6 +10,7 @@ import seaborn as sns
 from tabulate import tabulate
 import scipy.stats as stats
 
+plt.rcParams.update({'font.size': 12})
 
 def load_files():
     global datasets
@@ -105,7 +106,6 @@ def plot_line_chart():
     labels = []
 
     # Create a figure and axis
-    fig, ax = plt.subplots(figsize=(15, 8))
     if set_type_combo.get() == "differences in training and testing":
         for run in dataset['runs']:
             if find_and_checked_checkbox(run['method']):
@@ -142,20 +142,18 @@ def plot_line_chart():
                         first = False
                     else:
                         yValue[-1] = [x + y for x, y in zip(yValue[-1], fold)]
-                yValue[-1] = [x / len(run["results"][metric_type_combo.get()][set_type_combo.get()]) for x in yValue[-1]]
+                yValue[-1] = [x / len(run["results"][metric_type_combo.get()][set_type_combo.get()]) for x in
+                              yValue[-1]]
                 labels.append(run['method'])
 
+    fig, ax = plt.subplots(figsize=(15, 8))
     epochs = [i + 1 for i in range(len(yValue[0]))]
     for index in range(len(yValue)):
         ax.plot(epochs, yValue[index], label=labels[index])
 
     # Set labels and title
-    ax.set_xlabel('Epochs')
-    ax.set_ylabel(set_type_combo.get().capitalize() + " " + metric_type_combo.get())
-
-    title = (chart_type_combo.get() + " of epoch vs " + set_type_combo.get() + " " + metric_type_combo.get() + " for the " +
-             dataset_combo.get().lower() + " dataset")
-    ax.set_title(title)
+    ax.set_xlabel('Epochs', fontweight='bold', fontsize=12)
+    ax.set_ylabel(metric_type_combo.get().replace("_", " ").capitalize(), fontweight='bold', fontsize=12)
 
     # Add legend
     ax.legend(loc='upper left', bbox_to_anchor=(1, 1))
@@ -189,21 +187,22 @@ def plot_box_chart():
                 xValue[method] = []
                 for fold in run["results"][metric_type_combo.get()][set_type_combo.get()]:
                     xValue[method].append(fold[-1])
+
+    title = metric_type_combo.get().replace("_", " ")
     if metric_type_combo.get() == "f1_scores":
         baseline_mean = np.mean(xValue["Baseline"], axis=0)
         for run in dataset['runs']:
             method = run['method'].replace(" ", "\n")
             if find_and_checked_checkbox(run['method']):
                 xValue[method] = xValue[method] - baseline_mean
+        title = "Normalized " + title
 
-    fig, ax = plt.subplots(figsize=(15, 6))
+    fig, ax = plt.subplots(figsize=(15, 8))
 
     sns.boxplot(data=xValue, orient='v', ax=ax)
+    ax.set_ylabel(title, fontweight='bold', fontsize=12)
+    ax.set_xlabel("Techniques", fontweight='bold', fontsize=12)
 
-    ax.set_ylabel(set_type_combo.get().capitalize()+" "+metric_type_combo.get().replace("_", " "))
-    title = (chart_type_combo.get() + " of " + set_type_combo.get() + " " + metric_type_combo.get().replace("_", " ") + " for the " +
-             dataset_combo.get().lower() + " dataset")
-    ax.set_title(title.capitalize())
     canvas = FigureCanvasTkAgg(fig, master=window)
     canvas_widget = canvas.get_tk_widget()
     canvas_widget.grid(row=lastRow + 1, column=0, columnspan=6)
@@ -211,14 +210,8 @@ def plot_box_chart():
 
 def save_charts():
     folder_path = filedialog.askdirectory()
-    if chart_type_combo.get() == "Line chart":
-        figName = (chart_type_combo.get() + " of epoch vs " + set_type_combo.get() + " " + metric_type_combo.get() +
-                   " for the " + dataset_combo.get().lower() + " dataset.jpg")
-    else:
-        figName = (chart_type_combo.get() + " of " + set_type_combo.get() + " " + metric_type_combo.get() +
-                   " for the " + dataset_combo.get().lower() + " dataset.jpg")
-    figName = figName.replace(" ", "_")
-    plt.savefig(folder_path + "/" + figName)
+    figName = dataset_combo.get()+".svg"
+    plt.savefig(folder_path + "/" + figName, bbox_inches='tight', pad_inches=0.25, format="svg")
 
 
 def plot_charts():
@@ -270,11 +263,12 @@ def create_table():
     # Display the table
     print(tabulate(data, headers="firstrow"))
 
+
 def create_test():
     global dataset
     values = []
     names = []
-    combos =[]
+    combos = []
 
     if set_type_combo.get() == "differences in training and testing":
         for run in dataset['runs']:
@@ -298,14 +292,14 @@ def create_test():
 
     print("Dataset " + dataset_combo.get())
     for count_one, name_one in enumerate(names):
-        print("\t"+name_one)
+        print("\t" + name_one)
         for count_two, name_two in enumerate(names):
-            if not(combos.__contains__(name_one+name_two)):
+            if not (combos.__contains__(name_one + name_two)):
                 u_statistic, p_value = stats.mannwhitneyu(values[count_one], values[count_two], alternative='two-sided')
-                print(f"\t\t{name_two}: U-statistic = {u_statistic}, p-value = {round(p_value,3)}, reject = {p_value<0.005}")
-                combos.append(name_one+name_two)
-                combos.append(name_two+name_one)
-
+                print(
+                    f"\t\t{name_two}: U-statistic = {u_statistic}, p-value = {round(p_value, 3)}, reject = {p_value < 0.005}")
+                combos.append(name_one + name_two)
+                combos.append(name_two + name_one)
 
 
 canvas = None

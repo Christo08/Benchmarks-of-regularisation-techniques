@@ -41,12 +41,11 @@ class Monitor:
         self.y_validation = y_validation.to('cpu')
 
     def evaluate(self, model, epoch):
-        cpuModel = model.cpu()
-        training_loss, training_accuracy, training_f1_score = self.evaluate_performance(cpuModel, self.x_training,
+        training_loss, training_accuracy, training_f1_score = self.evaluate_performance(model, self.x_training,
                                                                                         self.y_training)
-        testing_loss, testing_accuracy, testing_f1_score = self.evaluate_performance(cpuModel, self.x_testing,
+        testing_loss, testing_accuracy, testing_f1_score = self.evaluate_performance(model, self.x_testing,
                                                                                      self.y_testing)
-        validation_loss, validation_accuracy, validation_f1_score = self.evaluate_performance(cpuModel, self.x_validation,
+        validation_loss, validation_accuracy, validation_f1_score = self.evaluate_performance(model, self.x_validation,
                                                                                               self.y_validation)
 
         if epoch == 0:
@@ -62,15 +61,15 @@ class Monitor:
             self.validation_accuracies.append([])
             self.validation_f1_scores.append([])
 
-        self.training_losses[self.fold].append(training_loss.item())
+        self.training_losses[self.fold].append(training_loss)
         self.training_accuracies[self.fold].append(training_accuracy)
         self.training_f1_scores[self.fold].append(training_f1_score)
 
-        self.testing_losses[self.fold].append(testing_loss.item())
+        self.testing_losses[self.fold].append(testing_loss)
         self.testing_accuracies[self.fold].append(testing_accuracy)
         self.testing_f1_scores[self.fold].append(testing_f1_score)
 
-        self.validation_losses[self.fold].append(validation_loss.item())
+        self.validation_losses[self.fold].append(validation_loss)
         self.validation_accuracies[self.fold].append(validation_accuracy)
         self.validation_f1_scores[self.fold].append(validation_f1_score)
 
@@ -79,23 +78,42 @@ class Monitor:
 
     def evaluate_performance(self, model, inputs, correct_labels):
         model.eval()
+        device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+        batch_size = 64  # Adjust batch size as necessary
+        data_loader = DataLoader(CustomDataset(inputs, correct_labels), batch_size=batch_size, shuffle=False)
+
+        total_loss = 0
+        total_correct = 0
+        total_samples = 0
+        all_correct_labels = []
+        all_predicted_labels = []
+
         with torch.no_grad():
+            for batch in data_loader:
+                batch_data = batch['data'].to(device)
+                batch_label = batch['label'].to(device)
 
-            outputs = model(inputs)
-            if isinstance(self.loss_function, CustomCrossEntropyRegularisationTermLoss):
-                loss = self.loss_function(outputs, correct_labels, self.model)
-            else:
-                loss = self.loss_function(outputs, correct_labels)
+                outputs = model(batch_data)
+                if isinstance(self.loss_function, CustomCrossEntropyRegularisationTermLoss):
+                    loss = self.loss_function(outputs, batch_label, model)
+                else:
+                    loss = self.loss_function(outputs, batch_label)
 
-            _, predicted_labels = torch.max(outputs, 1)
-            _, correct_labels = torch.max(correct_labels, 1)
-            correct_predictions = (predicted_labels == correct_labels).sum().item()
-            total_samples = len(correct_labels)
-            accuracies = correct_predictions / total_samples * 100
+                _, predicted_labels = torch.max(outputs, 1)
+                _, correct_labels = torch.max(batch_label, 1)
 
-            f1 = f1_score(correct_labels, predicted_labels, average='weighted')
+                total_loss += loss.item() * batch_data.size(0)
+                total_correct += (predicted_labels == correct_labels).sum().item()
+                total_samples += batch_data.size(0)
 
-        return loss, accuracies, f1
+                all_correct_labels.extend(correct_labels.cpu().numpy())
+                all_predicted_labels.extend(predicted_labels.cpu().numpy())
+
+        average_loss = total_loss / total_samples
+        accuracy = total_correct / total_samples * 100
+        f1 = f1_score(all_correct_labels, all_predicted_labels, average='weighted')
+
+        return average_loss, accuracy, f1
 
     def print_performance(self, fold, epoch):
         print("Date time: %s" % (datetime.now().strftime("%d/%m/%Y %H:%M:%S")))

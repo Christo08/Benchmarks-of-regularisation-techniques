@@ -21,7 +21,8 @@ class Net(nn.Module):
                  batch_norm=False,
                  dropout=None,
                  layer_norm=False,
-                 weight_norm=False):
+                 weight_norm=False,
+                 pool_padding=[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]):
         super(Net, self).__init__()
         cnn_layers = []
         dropout_index = 0
@@ -40,9 +41,9 @@ class Net(nn.Module):
             cnn_layers.append(conv_layer)
 
             if pool_type[counter] == 0:
-                cnn_layers.append(nn.MaxPool2d(kernel_size=pool_size[counter], stride=pool_size[counter], padding=0))
+                cnn_layers.append(nn.MaxPool2d(kernel_size=pool_size[counter], stride=pool_size[counter], padding=pool_padding[counter]))
             else:
-                cnn_layers.append(nn.AvgPool2d(kernel_size=pool_size[counter], stride=pool_size[counter], padding=0))
+                cnn_layers.append(nn.AvgPool2d(kernel_size=pool_size[counter], stride=pool_size[counter], padding=pool_padding[counter]))
 
             cnn_layers.append(nn.LeakyReLU(inplace=True))
 

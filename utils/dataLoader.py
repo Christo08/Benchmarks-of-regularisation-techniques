@@ -10,7 +10,7 @@ from pandas import Series
 
 from utils.settings import MNISTSettings, BallsSettings, BeanLeafSettings, ShoesSettings, CifarSettings, \
     MagicSettings, WhiteWineQualitySettings, MfeatPixelSettings, RainInAustraliaSettings, DiabetesSettings, \
-    LiverCirrhosisSettings
+    LiverCirrhosisSettings, FashionMNISTSettings
 
 
 def loadNumericDataSet(dataset_name):
@@ -50,6 +50,8 @@ def loadImagesDatasSet(dataset_name, needGeometricTransformation):
         setting = BallsSettings()
     elif dataset_name == 'BeanLeafs':
         setting = BeanLeafSettings()
+    elif dataset_name == 'FashionMNIST':
+        setting = FashionMNISTSettings()
     elif dataset_name == 'Cifar10':
         setting = CifarSettings()
     elif dataset_name == 'MNIST':
@@ -75,6 +77,8 @@ def loadImagesDatasSet(dataset_name, needGeometricTransformation):
         dataset = torchvision.datasets.CIFAR10(root=setting.path_to_data, download=True, transform=transform)
     elif dataset_name == 'MNIST':
         dataset = torchvision.datasets.MNIST(root=setting.path_to_data, download=True, transform=transform)
+    elif dataset_name == 'FashionMNIST':
+        dataset = torchvision.datasets.FashionMNIST(root=setting.path_to_data, download=True, transform=transform)
     else:
         dataset = torchvision.datasets.ImageFolder(root=setting.path_to_data, transform=transform)
     with open('Data/validationSet.json', 'r') as file:
@@ -86,6 +90,9 @@ def loadImagesDatasSet(dataset_name, needGeometricTransformation):
     elif dataset_name == "Cifar10":
         data, labels = torch.tensor(dataset.data), torch.tensor(dataset.targets)
         features = data.permute(0, 3, 1, 2)
+    elif dataset_name == 'FashionMNIST':
+        data, labels = dataset.data.clone().detach(), dataset.targets.clone().detach()
+        features = data.unsqueeze(1)
     else:
         dataArray = []
         labelsArray = []

@@ -20,6 +20,8 @@ def run(dataset_name, settings, training_set, validation_set):
 
     torch.manual_seed(seed)
 
+    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+
     labels = training_set[1].float()
     features_tensor = training_set[0].float()
 
@@ -29,17 +31,17 @@ def run(dataset_name, settings, training_set, validation_set):
     y_validation = clean_labels(validation_set[1].float(), number_of_outputs)
     x_validation = validation_set[0].float()
 
-    if torch.cuda.is_available():
-        features_tensor = features_tensor.cuda()
-        labels_tensor = labels_tensor.cuda()
-
-        x_validation = x_validation.cuda()
-        y_validation = y_validation.cuda()
-
     kf = KFold(n_splits=settings.number_of_fold, shuffle=True, random_state=seed)
 
     loss_function = CustomCrossEntropyLoss()
-    monitor = Monitor("Weight perturbation", dataset_name, seed, loss_function, settings.log_interval, x_validation, y_validation)
+
+    monitor = Monitor(method="Weight perturbation",
+                      dataset_name=dataset_name,
+                      seed=seed,
+                      loss_function=loss_function,
+                      log_interval=settings.log_interval,
+                      x_validation=x_validation,
+                      y_validation=y_validation)
 
     start_time = time.time()
 
@@ -64,35 +66,30 @@ def run(dataset_name, settings, training_set, validation_set):
                       number_of_hidden_layers=settings.number_of_hidden_layers,
                       number_of_neurons_in_layers=settings.number_of_neurons_in_layers,
                       output_size=number_of_outputs)
-        if torch.cuda.is_available():
-            network = network.cuda()
+        network = network.to(device)
 
         optimizer = optim.SGD(network.parameters(), lr=settings.learning_rate, momentum=settings.momentum)
         monitor.set_dataset(x_training, y_training, x_testing, y_testing, fold)
 
         for epoch in range(settings.number_of_epochs):
             for batch in train_loader:
+                batch_data = batch['data'].to(device)
+                batch_label = batch['label'].to(device)
+
                 network.train()
-                training_outputs = network(batch['data'])
-                training_loss = loss_function(training_outputs, batch['label'])
+                training_outputs = network(batch_data)
+                training_loss = loss_function(training_outputs, batch_label)
 
                 optimizer.zero_grad()
                 training_loss.backward()
                 optimizer.step()
-                del training_outputs
-                del batch
+
+                del batch_data, batch_label
                 torch.cuda.empty_cache()
             monitor.evaluate(network, epoch)
-            torch.cuda.empty_cache()
 
             if epoch % settings.weight_perturbation_epoch_interval == 0 and epoch != 0:
                 network.perturb_weights(perturbation_factor=settings.weight_perturbation_amount)
-        del network
-        del x_training
-        del y_training
-        del x_testing
-        del y_testing
-        torch.cuda.empty_cache()
 
     end_time = time.time()
     print('Finished Training')
