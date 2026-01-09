@@ -20,7 +20,6 @@ if __name__ == '__main__':
                 "Balls",
                 "Bean Leaf",
                 "Bird Song",
-                "Cifar-10",
                 "Diabetes",
                 "Gametes Epistasis",
                 "Healthcare",
