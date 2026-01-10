@@ -24,10 +24,6 @@ def main():
         if process == process_options[0]:
             clean()
         elif process == process_options[1]:
-            print("Select the type of network:")
-            print("1. NN")
-            print("2. CNN")
-            print("3. Back")
             type = int(input())
             if type == 1:
                 optimiseNN()
