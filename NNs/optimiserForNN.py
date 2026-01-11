@@ -8,7 +8,7 @@ from torch.utils.data import DataLoader
 
 from NNs.Numeric.basicNN import Net
 from utils.customDataset import CustomDataset
-from utils.dataLoader import loadNumericDataSet, clean_labels
+from utils.dataLoader import load_numeric_data_set, clean_labels
 from utils.lossFucntions import CustomCrossEntropyLoss
 from utils.lossFucntions import CustomCrossEntropyRegularisationTermLoss
 
@@ -61,41 +61,41 @@ def train(params):
         testing_loss += loss_function(network(x_testing), y_testing).item()
     return testing_loss / setting.number_of_fold
 
+def optimise_nn():
+    datasets = ["Diabetes",
+                "LiverCirrhosis",
+                "Magic",
+                "MfeatPixel",
+                "RainInAustralia",
+                "WhiteWineQuality"]
+    names = "0.\t exit\n"
+    counter = 1
+    for dataset in datasets:
+        names += str(counter) + ".\t " + dataset + "\n"
+        counter += 1
+    names += str(counter) + ".\t All\n"
 
-datasets = ["Diabetes",
-            "LiverCirrhosis",
-            "Magic",
-            "MfeatPixel",
-            "RainInAustralia",
-            "WhiteWineQuality"]
-names = "0.\t exit\n"
-counter = 1
-for dataset in datasets:
-    names += str(counter) + ".\t " + dataset + "\n"
-    counter += 1
-names += str(counter) + ".\t All\n"
+    while True:
+        nameIndex = int(input("Please select a dataset's name by enter a number:\n" + names))
+        if nameIndex == 0:
+            break
+        datasetNames = []
+        if nameIndex == 7:
+            datasetNames = datasets
+        else:
+            datasetNames.append(datasets[nameIndex - 1])
+        for dataset in datasetNames:
+            training_set, validation_set, setting = load_numeric_data_set(dataset)
+            search = pyhopper.Search({
+                "weight_decay": pyhopper.float(0.0001, 0.999)
+            })
+            best_params = search.run(
+                train,
+                direction="min",
+                steps=150,
+                n_jobs="per-gpu",
+             )
 
-while True:
-    nameIndex = int(input("Please select a dataset's name by enter a number:\n" + names))
-    if nameIndex == 0:
-        break
-    datasetNames = []
-    if nameIndex == 7:
-        datasetNames = datasets
-    else:
-        datasetNames.append(datasets[nameIndex - 1])
-    for dataset in datasetNames:
-        training_set, validation_set, setting = loadNumericDataSet(dataset)
-        search = pyhopper.Search({
-            "weight_decay": pyhopper.float(0.0001, 0.999)
-        })
-        best_params = search.run(
-            train,
-            direction="min",
-            steps=150,
-            n_jobs="per-gpu",
-         )
-
-        test_loss = train(best_params)
-        print(f"Tuned params test {dataset} loss: {test_loss:0.2f}%")
-        print(dataset + ": ", best_params)
+            test_loss = train(best_params)
+            print(f"Tuned params test {dataset} loss: {test_loss:0.2f}%")
+            print(dataset + ": ", best_params)

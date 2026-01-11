@@ -1,17 +1,47 @@
-DATASETS = ["Agaricus Lepiota", #0
-            "Balls", #1
-            "Bean Leaf", #2
-            "Bird Song", #3
-            "Diabetes", #4
-            "Gametes Epistasis", #5
-            "Healthcare", #6
-            "Liver Cirrhosis", #7
-            "Magic", #8
-            "mfeat_pixel",#9
-            "Mofn", #10
-            "Shoes", #11
-            "Rain in Australia", #12
-            "Wine quality white"] #13
+CLEANED_DATASETS = ["Agaricus Lepiota", #0 -r
+                    "Balls", #1
+                    "Bean Leaf", #2
+                    "Bird Song", #3 -r
+                    "Diabetes", #4
+                    "Gametes Epistasis", #5 -r
+                    "Healthcare", #6 -r
+                    "Liver Cirrhosis", #7
+                    "Magic", #8
+                    "mfeat_pixel",#9
+                    "Mofn", #10
+                    "Shoes", #11
+                    "Rain in Australia", #12 -r
+                    "Wine quality white"] #13
+IMAGE_DATASETS = ["Balls",
+                  "BeanLeafs",
+                  "FashionMNIST",
+                  "Cifar10",
+                  "MNIST",
+                  "Shoes"]
+NUMERIC_DATASETS = ["Diabetes",
+                    "LiverCirrhosis",
+                    "Magic",
+                    "MfeatPixel",
+                    "WhiteWineQuality"]
+MODULE_TYPES= ["CNN", "NN"]
+IMAGE_REGULAR_TYPES = ["Baseline",
+                       "Batch Normalisation",
+                       "Dropout",
+                       "Geometric Transformation",
+                       "Layer Normalisation",
+                       "Pruning",
+                       "Regularisation Term",
+                       "Weight Normalisation",
+                       "Weight Perturbation"]
+NUMERIC_REGULAR_TYPES = ["Baseline",
+                         "Batch Normalisation",
+                         "Dropout",
+                         "Layer Normalisation",
+                         "Pruning",
+                         "Regularisation Term",
+                         "SMOTE",
+                         "Weight Normalisation",
+                         "Weight Perturbation"]
 
 def show_menu(prompt, items):
     selection = -1
@@ -22,9 +52,30 @@ def show_menu(prompt, items):
         selection = int(input())-1
     return items[selection]
 
-def show_dataset_menu():
+def show_model_menu():
+    module_names = ["All"]
+    module_names.extend(MODULE_TYPES)
+    module_names.append("Back")
+    module_option = show_menu("Select module type by entering a number: ", module_names)
+    if module_option == module_names[0]:
+        names =  module_names[1:-1]
+    elif module_option == module_names[len(module_names) - 1]:
+        return []
+    else:
+        names = [module_option]
+    return names
+
+def show_dataset_menu(type = "CLEANED"):
     dataset_names = ["All"]
-    dataset_names.extend(DATASETS)
+    if type == "CLEANED":
+        dataset_names.extend(CLEANED_DATASETS)
+    elif type == MODULE_TYPES[0]:
+        dataset_names.extend(IMAGE_DATASETS)
+    elif type == MODULE_TYPES[1]:
+        dataset_names.extend(NUMERIC_DATASETS)
+    else:
+        dataset_names.extend(IMAGE_DATASETS)
+        dataset_names.extend(NUMERIC_DATASETS)
     dataset_names.append("Custom")
     dataset_names.append("Back")
     datasets_option = show_menu("Select dataset by entering a number: ", dataset_names)
@@ -40,4 +91,27 @@ def show_dataset_menu():
         return []
     else:
         names = [datasets_option]
+    return names
+
+def show_regularisation_menu(type):
+    regular_types = ["All"]
+    if type == MODULE_TYPES[0] or type == "BOTH":
+        regular_types.extend(IMAGE_REGULAR_TYPES)
+    if type == MODULE_TYPES[1] or type == "BOTH":
+        regular_types.extend(NUMERIC_REGULAR_TYPES)
+    regular_types.append("Custom")
+    regular_types.append("Back")
+    regular_option = show_menu("Select regularisation method by entering a number: ", regular_types)
+    if regular_option == regular_types[0]:
+        names = regular_types[1:-2]
+    elif regular_option == regular_types[len(regular_types) - 2]:
+        print("Enter the regularisation types' numbers separated by a comma:")
+        select_dataset_indexes = input().replace(' ', '').split(",")
+        names = []
+        for select_dataset_index in select_dataset_indexes:
+            names.append(regular_types[int(select_dataset_index) - 1])
+    elif regular_option == regular_types[len(regular_types) - 1]:
+        return []
+    else:
+        names = [regular_option]
     return names

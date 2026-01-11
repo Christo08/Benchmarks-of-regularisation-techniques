@@ -13,7 +13,7 @@ from utils.settings import MNISTSettings, BallsSettings, BeanLeafSettings, Shoes
     LiverCirrhosisSettings, FashionMNISTSettings
 
 
-def loadNumericDataSet(dataset_name):
+def load_numeric_data_set(dataset_name):
     if dataset_name == 'Diabetes':
         setting = DiabetesSettings()
     elif dataset_name == 'LiverCirrhosis':
@@ -45,7 +45,7 @@ def loadNumericDataSet(dataset_name):
     return training_set, validation_set, setting
 
 
-def loadImagesDatasSet(dataset_name, needGeometricTransformation):
+def load_images_datas_set(dataset_name, needGeometricTransformation):
     if dataset_name == 'Balls':
         setting = BallsSettings()
     elif dataset_name == 'BeanLeafs':

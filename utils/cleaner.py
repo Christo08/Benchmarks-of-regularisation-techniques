@@ -1,4 +1,3 @@
-# z-scaling 5-fold cross-validation
 import os
 import shutil
 
@@ -6,7 +5,7 @@ import pandas as pd
 from pmlb import fetch_data
 from scipy.stats import zscore
 
-from utils.menus import show_dataset_menu, DATASETS
+from utils.menus import show_dataset_menu, CLEANED_DATASETS
 
 
 def clean():
@@ -17,7 +16,7 @@ def clean():
         else:
             for dataset_name in dataset_names:
                 print(f"Cleaning {dataset_name}")
-                if dataset_name == DATASETS[0]:
+                if dataset_name == CLEANED_DATASETS[0]:
                     agaricus_lepiota = fetch_data('agaricus_lepiota')
                     agaricus_lepiota = agaricus_lepiota.drop(['veil-type'], axis=1)
                     for column in agaricus_lepiota.columns:
@@ -35,7 +34,7 @@ def clean():
                                            sep=',',
                                            index=False,
                                            encoding='utf-8')
-                elif dataset_name == DATASETS[1]:
+                elif dataset_name == CLEANED_DATASETS[1]:
                     label_and_path_dataframe = pd.read_csv('Data/Images/Balls/balls.csv')
                     for index, row in label_and_path_dataframe.iterrows():
                         file_paths = row["filepaths"]
@@ -44,7 +43,7 @@ def clean():
                         final_path = final_path.replace("valid/", "")
                         shutil.copyfile(f"Data/Images/Balls/{file_paths}",
                                         f"Data/Images/Balls/cleanedData/{final_path}")
-                elif dataset_name == DATASETS[2]:
+                elif dataset_name == CLEANED_DATASETS[2]:
                     label_and_path_dataframe = pd.read_csv('Data/Images/Bean Leaf Lesions Classification/train.csv')
                     for index, row in label_and_path_dataframe.iterrows():
                         file_paths = row["image:FILE"]
@@ -57,7 +56,7 @@ def clean():
                         file_name = file_paths.replace("val/", "")
                         shutil.copyfile(f"Data/Images/Bean Leaf Lesions Classification/{file_paths}",
                                         f"Data/Images/Bean Leaf Lesions Classification/cleandData/{file_name}")
-                elif dataset_name == DATASETS[3]:
+                elif dataset_name == CLEANED_DATASETS[3]:
                     testing_bird_song = pd.read_csv('Data/Numeric/Bird Song/test.csv')
                     train_bird_song = pd.read_csv('Data/Numeric/Bird Song/train.csv')
                     bird_song = pd.concat([testing_bird_song, train_bird_song])
@@ -74,7 +73,7 @@ def clean():
                                      sep=',',
                                      index=False,
                                      encoding='utf-8')
-                elif dataset_name == DATASETS[4]:
+                elif dataset_name == CLEANED_DATASETS[4]:
                     diabetes_Dataset = pd.read_csv(
                         'Data/Numeric/DiabetesHealthIndicators/diabetes_binary_5050split_health_indicators_BRFSS2015.csv')
                     diabetes_Dataset.rename(columns={'Diabetes_binary': 'target'}, inplace=True)
@@ -82,14 +81,14 @@ def clean():
                                            sep=',',
                                            index=False,
                                            encoding='utf-8')
-                elif dataset_name == DATASETS[5]:
+                elif dataset_name == CLEANED_DATASETS[5]:
                     gametes_dataset = fetch_data('GAMETES_Epistasis_2_Way_1000atts_0.4H_EDM_1_EDM_1_1')
                     gametes_dataset.drop([0])
                     gametes_dataset.to_csv('Data/Numeric/Gametes/cleanedData.csv',
                                           sep=',',
                                           index=False,
                                           encoding='utf-8')
-                elif dataset_name == DATASETS[6]:
+                elif dataset_name == CLEANED_DATASETS[6]:
                     healthcare_dataset = pd.read_csv('Data/Numeric/Healthcare/healthcare_dataset.csv')
 
                     for column in healthcare_dataset.columns:
@@ -103,7 +102,7 @@ def clean():
                                              sep=',',
                                              index=False,
                                              encoding='utf-8')
-                elif dataset_name == DATASETS[7]:
+                elif dataset_name == CLEANED_DATASETS[7]:
                     liver_cirrhosis_dataset = pd.read_csv('Data/Numeric/Liver Cirrhosis/liver_cirrhosis.csv')
                     for column in liver_cirrhosis_dataset.columns:
                         if (column == "Status" or
@@ -124,7 +123,7 @@ def clean():
                                                  sep=',',
                                                  index=False,
                                                  encoding='utf-8')
-                elif dataset_name == DATASETS[8]:
+                elif dataset_name == CLEANED_DATASETS[8]:
                     magic_dataset = fetch_data('magic')
                     magic_dataset = magic_dataset.drop(magic_dataset.columns[0], axis=1)
                     counter = 0
@@ -138,7 +137,7 @@ def clean():
                                          sep=',',
                                          index=False,
                                          encoding='utf-8')
-                elif dataset_name == DATASETS[9]:
+                elif dataset_name == CLEANED_DATASETS[9]:
                     pixel_dataset = fetch_data('mfeat_pixel')
                     for column in pixel_dataset.columns:
                         if column != "target":
@@ -151,13 +150,13 @@ def clean():
                                          sep=',',
                                          index=False,
                                          encoding='utf-8')
-                elif dataset_name == DATASETS[10]:
+                elif dataset_name == CLEANED_DATASETS[10]:
                     mofin_dataset = fetch_data('mofn_3_7_10')
                     mofin_dataset.to_csv('Data/Numeric/Mofn/cleanedData.csv',
                                          sep=',',
                                          index=False,
                                          encoding='utf-8')
-                elif dataset_name == DATASETS[11]:
+                elif dataset_name == CLEANED_DATASETS[11]:
                     base_path = "Data/Images/Shoes"
                     test_path = base_path + "/test"
                     training_path = base_path + "/train"
@@ -170,7 +169,7 @@ def clean():
                         for imageName in os.listdir(f"{training_path}/{path}"):
                             shutil.copyfile(f"{training_path}/{path}/{imageName}",
                                             f"{cleaned_path}/{path}/{imageName}")
-                elif dataset_name == DATASETS[12]:
+                elif dataset_name == CLEANED_DATASETS[12]:
                     rain_dataset = pd.read_csv('Data/Numeric/Rain in Australia/weatherAUS.csv')
                     rain_dataset = rain_dataset.drop(columns=["Date"])
 
@@ -211,7 +210,7 @@ def clean():
                                         sep=',',
                                         index=False,
                                         encoding='utf-8')
-                elif dataset_name == DATASETS[13]:
+                elif dataset_name == CLEANED_DATASETS[13]:
                     white_wine_dataset = fetch_data('wine_quality_white')
                     counter = 0
                     for column in white_wine_dataset.columns:

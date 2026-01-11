@@ -11,7 +11,7 @@ from torch.utils.data import DataLoader
 
 from NNs.Images.basicCNN import Net
 from utils.customDataset import CustomDataset
-from utils.dataLoader import clean_labels, loadImagesDatasSet
+from utils.dataLoader import clean_labels, load_images_datas_set
 from utils.lossFucntions import CustomCrossEntropyLoss
 from utils.lossFucntions import CustomCrossEntropyRegularisationTermLoss
 
@@ -156,55 +156,55 @@ def calculate_valid_padding_stride(input_size, kernel_size, stride, padding):
 
     return output_size, padding, stride, kernel_size
 
+def optimise_cnn():
+    datasets = ["Balls", "BeanLeafs", "FashionMNIST", "Cifar10", "MNIST", "Shoes"]
+    names = "0.\t exit\n"
+    counter = 1
+    for dataset in datasets:
+        names += str(counter) + ".\t " + dataset + "\n"
+        counter += 1
+    names += str(counter) + ".\t All\n"
 
-datasets = ["Balls", "BeanLeafs", "FashionMNIST", "Cifar10", "MNIST", "Shoes"]
-names = "0.\t exit\n"
-counter = 1
-for dataset in datasets:
-    names += str(counter) + ".\t " + dataset + "\n"
-    counter += 1
-names += str(counter) + ".\t All\n"
+    nameIndex = input("Please select a dataset's name by enter a number:\n" + names)
 
-nameIndex = input("Please select a dataset's name by enter a number:\n" + names)
+    datasetNames = []
+    if nameIndex == "6":
+        datasetNames = datasets
+    else:
+        indexes = nameIndex.split(" ")
+        for index in indexes:
+            datasetNames.append(datasets[int(index) - 1])
+    for dataset in datasetNames:
+        print(f"Starting {dataset}")
+        training_set, validation_set, settings = load_images_datas_set(dataset, False)
+        search = pyhopper.Search({
+            "batch_size": pyhopper.int(16, 128, power_of=2),
+            "learning_rate": pyhopper.float(0.0005, 0.25, log=True),
+            "momentum": pyhopper.float(0.0005, 0.25, log=True),
+            "number_of_epochs": pyhopper.int(50, 500, multiple_of=50),
+            "number_of_convolutional_layers": pyhopper.int(1, 10),
+            "out_channels": pyhopper.int(32, 64, power_of=2, shape=10),
 
-datasetNames = []
-if nameIndex == "6":
-    datasetNames = datasets
-else:
-    indexes = nameIndex.split(" ")
-    for index in indexes:
-        datasetNames.append(datasets[int(index) - 1])
-for dataset in datasetNames:
-    print(f"Starting {dataset}")
-    training_set, validation_set, settings = loadImagesDatasSet(dataset, False)
-    search = pyhopper.Search({
-        "batch_size": pyhopper.int(16, 128, power_of=2),
-        "learning_rate": pyhopper.float(0.0005, 0.25, log=True),
-        "momentum": pyhopper.float(0.0005, 0.25, log=True),
-        "number_of_epochs": pyhopper.int(50, 500, multiple_of=50),
-        "number_of_convolutional_layers": pyhopper.int(1, 10),
-        "out_channels": pyhopper.int(32, 64, power_of=2, shape=10),
+            "kernel_sizes": pyhopper.int(1, 10, shape=10),
+            "kernel_strides": pyhopper.int(1, 10, shape=10),
+            "padding_sizes": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
 
-        "kernel_sizes": pyhopper.int(1, 10, shape=10),
-        "kernel_strides": pyhopper.int(1, 10, shape=10),
-        "padding_sizes": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            "pool_kernel_sizes": pyhopper.int(1, 10, shape=10),
+            "pool_stride_sizes": pyhopper.int(1, 10, shape=10),
+            "pool_padding_sizes": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
 
-        "pool_kernel_sizes": pyhopper.int(1, 10, shape=10),
-        "pool_stride_sizes": pyhopper.int(1, 10, shape=10),
-        "pool_padding_sizes": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            "pool_type": pyhopper.int(0, 1, shape=10),
+            "number_of_hidden_layers": pyhopper.int(1, 5),
+            "number_of_neurons_in_layers": pyhopper.int(50, 1000, multiple_of=50, shape=5),
+        })
+        best_params = search.run(
+            train,
+            direction="min",
+            steps=150,
+            n_jobs="per-gpu",
+            checkpoint_path="C:\\Users\\User\\OneDrive\\tuks\\master\\code\\CheckPoints\\" + dataset + "Checkpoint"
+        )
 
-        "pool_type": pyhopper.int(0, 1, shape=10),
-        "number_of_hidden_layers": pyhopper.int(1, 5),
-        "number_of_neurons_in_layers": pyhopper.int(50, 1000, multiple_of=50, shape=5),
-    })
-    best_params = search.run(
-        train,
-        direction="min",
-        steps=150,
-        n_jobs="per-gpu",
-        checkpoint_path="C:\\Users\\User\\OneDrive\\tuks\\master\\code\\CheckPoints\\" + dataset + "Checkpoint"
-    )
-
-    test_acc = train(best_params)
-    print(f"Tuned params test {dataset} loss: {test_acc:0.2f}")
-    print(dataset + ": ", best_params)
+        test_acc = train(best_params)
+        print(f"Tuned params test {dataset} loss: {test_acc:0.2f}")
+        print(dataset + ": ", best_params)
