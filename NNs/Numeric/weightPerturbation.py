@@ -13,10 +13,12 @@ from utils.lossFucntions import CustomCrossEntropyLoss
 from utils.monitor import Monitor
 
 
-def run(dataset_name, settings, training_set, validation_set):
-    print(dataset_name + " weight perturbation run")
+def run(dataset_name, settings, training_set, validation_set, full_performances = True):
+
     seed = random.randint(1, 100000)
-    print("Random Seed: ", seed)
+    if full_performances:
+        print(dataset_name + " weight perturbation run")
+        print("Random Seed: ", seed)
 
     torch.manual_seed(seed)
 
@@ -45,7 +47,8 @@ def run(dataset_name, settings, training_set, validation_set):
                       loss_function=loss_function,
                       log_interval=settings.log_interval,
                       x_validation=x_validation,
-                      y_validation=y_validation)
+                      y_validation=y_validation,
+                      full_performances=full_performances)
 
     start_time = time.time()
     for fold, (train_index, test_index) in enumerate(kf.split(features_tensor)):
@@ -86,6 +89,7 @@ def run(dataset_name, settings, training_set, validation_set):
                 network.perturb_weights(perturbation_factor=settings.weight_perturbation_amount)
 
     end_time = time.time()
-    print('Finished Training')
+    if full_performances:
+        print('Finished Training')
 
     return monitor.log_performance(start_time, end_time, settings)

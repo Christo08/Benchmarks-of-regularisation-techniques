@@ -13,7 +13,7 @@ from utils.lossFucntions import CustomCrossEntropyLoss
 from utils.monitor import Monitor
 
 
-def run(dataset_name, settings, training_set, validation_set):
+def run(dataset_name, settings, training_set, validation_set, full_performances = True):
     print(dataset_name + " weight normalisation run")
     seed = random.randint(1, 100000)
     print("Random Seed: ", seed)
@@ -41,7 +41,8 @@ def run(dataset_name, settings, training_set, validation_set):
                       loss_function=loss_function,
                       log_interval=settings.log_interval,
                       x_validation=x_validation,
-                      y_validation=y_validation)
+                      y_validation=y_validation,
+                      full_performances = full_performances)
 
     start_time = time.time()
 

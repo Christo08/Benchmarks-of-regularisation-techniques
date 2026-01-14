@@ -12,17 +12,16 @@ CLEANED_DATASETS = ["Agaricus Lepiota", #0 -r
                     "Shoes", #11
                     "Rain in Australia", #12 -r
                     "Wine quality white"] #13
-IMAGE_DATASETS = ["Balls",
-                  "BeanLeafs",
-                  "FashionMNIST",
-                  "Cifar10",
-                  "MNIST",
-                  "Shoes"]
-NUMERIC_DATASETS = ["Diabetes",
-                    "LiverCirrhosis",
-                    "Magic",
-                    "MfeatPixel",
-                    "WhiteWineQuality"]
+IMAGE_DATASETS = ["Balls", #0
+                  "BeanLeafs", #1
+                  "FashionMNIST", #2
+                  "Cifar10", #3
+                  "Shoes"] #4
+NUMERIC_DATASETS = ["Diabetes", #0
+                    "LiverCirrhosis", #1
+                    "Magic", #2
+                    "MfeatPixel", #3
+                    "WhiteWineQuality"] #4
 MODULE_TYPES= ["CNN", "NN"]
 IMAGE_REGULAR_TYPES = ["Baseline",
                        "Batch Normalisation",

@@ -1,10 +1,9 @@
 import torch
 
+from NNs.mainRunner import make_run
+from NNs.optimiser import optimiser
 from utils.cleaner import clean
 from utils.menus import show_menu
-from NNs.optimiserForNN import optimise_nn
-from NNs.optimiserForCNN import optimise_cnn
-from NNs.mainRunner import make_run
 
 process_options = ["Clean datasets",  #0-1
                    "Optimise hyperparameters",  #1-2
@@ -24,11 +23,7 @@ def main():
         if process == process_options[0]:
             clean()
         elif process == process_options[1]:
-            type = int(input())
-            if type == 1:
-                optimise_nn()
-            elif type == 2:
-                optimise_cnn()
+            optimiser()
         elif process == process_options[2]:
             make_run()
         else:

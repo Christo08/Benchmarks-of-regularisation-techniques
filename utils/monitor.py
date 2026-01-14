@@ -11,7 +11,7 @@ from sklearn.metrics import f1_score
 
 
 class Monitor:
-    def __init__(self, method, dataset_name, seed, loss_function, log_interval, x_validation, y_validation):
+    def __init__(self, method, dataset_name, seed, loss_function, log_interval, x_validation, y_validation, full_performances = True):
         torch.cuda.empty_cache()
         self.fold = 0
         self.x_training = None
@@ -39,6 +39,8 @@ class Monitor:
 
         self.x_validation = x_validation.to('cpu')
         self.y_validation = y_validation.to('cpu')
+
+        self.full_performances = full_performances
 
     def evaluate(self, model, epoch):
         training_loss, training_accuracy, training_f1_score = self.evaluate_performance(model, self.x_training,
@@ -116,23 +118,24 @@ class Monitor:
         return average_loss, accuracy, f1
 
     def print_performance(self, fold, epoch):
-        print("Date time: %s" % (datetime.now().strftime("%d/%m/%Y %H:%M:%S")))
-        print("Dataset: %s" % self.dataset_name)
-        print("Method: %s" % self.method)
-        print("Fold: %s" % fold)
-        print("Epoch: %s" % epoch)
-        print("+------------+--------------------+---------------------+------------------+")
-        print("| Type       | Loss \t\t\t  | Accuracy \t\t\t| F1 scores: \t\t|")
-        print("+------------+--------------------+---------------------+------------------+")
-        print("| Training   | %s | %s \t| %s | " % (
-            self.training_losses[-1][-1], self.training_accuracies[-1][-1], self.training_f1_scores[-1][-1]))
-        print("+------------+--------------------+---------------------+-------------------+")
-        print("| Testing    | %s \t| %s | %s | " % (
-            self.testing_losses[-1][-1], self.testing_accuracies[-1][-1], self.testing_f1_scores[-1][-1]))
-        print("+------------+--------------------+---------------------+-------------------+")
-        print("| Validation | %s \t| %s | %s | " % (
-            self.validation_losses[-1][-1], self.validation_accuracies[-1][-1], self.validation_f1_scores[-1][-1]))
-        print("+------------+--------------------+---------------------+-------------------+")
+        if self.full_performances:
+            print("Date time: %s" % (datetime.now().strftime("%d/%m/%Y %H:%M:%S")))
+            print("Dataset: %s" % self.dataset_name)
+            print("Method: %s" % self.method)
+            print("Fold: %s" % fold)
+            print("Epoch: %s" % epoch)
+            print("+------------+--------------------+---------------------+------------------+")
+            print("| Type       | Loss \t\t\t  | Accuracy \t\t\t| F1 scores: \t\t|")
+            print("+------------+--------------------+---------------------+------------------+")
+            print("| Training   | %s | %s \t| %s | " % (
+                self.training_losses[-1][-1], self.training_accuracies[-1][-1], self.training_f1_scores[-1][-1]))
+            print("+------------+--------------------+---------------------+-------------------+")
+            print("| Testing    | %s \t| %s | %s | " % (
+                self.testing_losses[-1][-1], self.testing_accuracies[-1][-1], self.testing_f1_scores[-1][-1]))
+            print("+------------+--------------------+---------------------+-------------------+")
+            print("| Validation | %s \t| %s | %s | " % (
+                self.validation_losses[-1][-1], self.validation_accuracies[-1][-1], self.validation_f1_scores[-1][-1]))
+            print("+------------+--------------------+---------------------+-------------------+")
 
     def log_performance(self, start_time, end_time, settings):
         run_object = {
