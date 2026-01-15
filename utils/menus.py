@@ -32,6 +32,11 @@ IMAGE_REGULAR_TYPES = ["Baseline",
                        "Regularisation Term",
                        "Weight Normalisation",
                        "Weight Perturbation"]
+OPTIMISER_REGULAR_TYPES= ["Baseline",
+                          "Dropout",
+                          "Pruning",
+                          "Weight Normalisation",
+                           "Weight Perturbation"]
 NUMERIC_REGULAR_TYPES = ["Baseline",
                          "Batch Normalisation",
                          "Dropout",
@@ -98,6 +103,26 @@ def show_regularisation_menu(type):
         regular_types.extend(IMAGE_REGULAR_TYPES)
     if type == MODULE_TYPES[1] or type == "BOTH":
         regular_types.extend(NUMERIC_REGULAR_TYPES)
+    regular_types.append("Custom")
+    regular_types.append("Back")
+    regular_option = show_menu("Select regularisation method by entering a number: ", regular_types)
+    if regular_option == regular_types[0]:
+        names = regular_types[1:-2]
+    elif regular_option == regular_types[len(regular_types) - 2]:
+        print("Enter the regularisation types' numbers separated by a comma:")
+        select_dataset_indexes = input().replace(' ', '').split(",")
+        names = []
+        for select_dataset_index in select_dataset_indexes:
+            names.append(regular_types[int(select_dataset_index) - 1])
+    elif regular_option == regular_types[len(regular_types) - 1]:
+        return []
+    else:
+        names = [regular_option]
+    return names
+
+def show_optimiser_regularisation_menu():
+    regular_types = ["All"]
+    regular_types.extend(OPTIMISER_REGULAR_TYPES)
     regular_types.append("Custom")
     regular_types.append("Back")
     regular_option = show_menu("Select regularisation method by entering a number: ", regular_types)

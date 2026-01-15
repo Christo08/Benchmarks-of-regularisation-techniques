@@ -1,15 +1,17 @@
 class DiabetesSettings:
-    batch_size = 58
     categorical_features = [0, 1, 2, 4, 5, 6, 7, 8, 9, 10, 11, 12, 15, 16, 17, 18, 19, 20]
-    dropout_layer = [0.18341917, 0.00635388, 0.58905411, 0.394637, 0.62968202]
-    learning_rate = 0.02362717591965803
+    path_to_data = './Data/Numeric/DiabetesHealthIndicators/cleanedData.csv'
     log_interval = 19
+    number_of_fold = 15
+
+    batch_size = 58
+    learning_rate = 0.02362717591965803
     momentum = 0.03260874342736158
     number_of_epochs = 190
-    number_of_fold = 15
     number_of_hidden_layers = 5
     number_of_neurons_in_layers = [150, 60, 200, 30, 20]
-    path_to_data = './Data/Numeric/DiabetesHealthIndicators/cleanedData.csv'
+
+    dropout_layer = [0.18341917, 0.00635388, 0.58905411, 0.394637, 0.62968202]
     prune_amount = 0.26553199631005675
     prune_epoch_interval = 19
     weight_decay = 0.0001
@@ -36,31 +38,9 @@ class DiabetesSettings:
         }
 
     def json_to_object(self, settings):
-        if isinstance(settings, dict):
-            src = settings
-            get = src.get
-        else:
-            src = settings
-            get = lambda k, default=None: getattr(src, k, default)
-
-        self.batch_size = get("batch_size", self.batch_size)
-        self.categorical_features = get("categorical_features", self.categorical_features)
-        self.dropout_layer = get("dropout_layer", self.dropout_layer)
-        self.learning_rate = get("learning_rate", self.learning_rate)
-        self.log_interval = get("log_interval", self.log_interval)
-        self.momentum = get("momentum", self.momentum)
-        self.number_of_epochs = get("number_of_epochs", self.number_of_epochs)
-        self.number_of_fold = get("number_of_fold", self.number_of_fold)
-        self.number_of_hidden_layers = get("number_of_hidden_layers", self.number_of_hidden_layers)
-        self.number_of_neurons_in_layers = get("number_of_neurons_in_layers", self.number_of_neurons_in_layers)
-        self.path_to_data = get("path_to_data", self.path_to_data)
-        self.prune_amount = get("prune_amount", self.prune_amount)
-        self.prune_epoch_interval = get("prune_epoch_interval", self.prune_epoch_interval)
-        self.weight_decay = get("weight_decay", self.weight_decay)
-        self.weight_perturbation_amount = get("weight_perturbation_amount", self.weight_perturbation_amount)
-        self.weight_perturbation_epoch_interval = get(
-            "weight_perturbation_epoch_interval", self.weight_perturbation_epoch_interval
-        )
+        for key, value in settings.items():
+            if hasattr(self, key):
+                setattr(self, key, value)
 
         return self
 
@@ -108,31 +88,9 @@ class LiverCirrhosisSettings:
         }
 
     def json_to_object(self, settings):
-        if isinstance(settings, dict):
-            src = settings
-            get = src.get
-        else:
-            src = settings
-            get = lambda k, default=None: getattr(src, k, default)
-
-        self.batch_size = get("batch_size", self.batch_size)
-        self.categorical_features = get("categorical_features", self.categorical_features)
-        self.dropout_layer = get("dropout_layer", self.dropout_layer)
-        self.learning_rate = get("learning_rate", self.learning_rate)
-        self.log_interval = get("log_interval", self.log_interval)
-        self.momentum = get("momentum", self.momentum)
-        self.number_of_epochs = get("number_of_epochs", self.number_of_epochs)
-        self.number_of_fold = get("number_of_fold", self.number_of_fold)
-        self.number_of_hidden_layers = get("number_of_hidden_layers", self.number_of_hidden_layers)
-        self.number_of_neurons_in_layers = get("number_of_neurons_in_layers", self.number_of_neurons_in_layers)
-        self.path_to_data = get("path_to_data", self.path_to_data)
-        self.prune_amount = get("prune_amount", self.prune_amount)
-        self.prune_epoch_interval = get("prune_epoch_interval", self.prune_epoch_interval)
-        self.weight_decay = get("weight_decay", self.weight_decay)
-        self.weight_perturbation_amount = get("weight_perturbation_amount", self.weight_perturbation_amount)
-        self.weight_perturbation_epoch_interval = get(
-            "weight_perturbation_epoch_interval", self.weight_perturbation_epoch_interval
-        )
+        for key, value in settings.items():
+            if hasattr(self, key):
+                setattr(self, key, value)
 
         return self
 
@@ -175,31 +133,9 @@ class MagicSettings:
         }
 
     def json_to_object(self, settings):
-        if isinstance(settings, dict):
-            src = settings
-            get = src.get
-        else:
-            src = settings
-            get = lambda k, default=None: getattr(src, k, default)
-
-        self.batch_size = get("batch_size", self.batch_size)
-        self.categorical_features = get("categorical_features", self.categorical_features)
-        self.dropout_layer = get("dropout_layer", self.dropout_layer)
-        self.learning_rate = get("learning_rate", self.learning_rate)
-        self.log_interval = get("log_interval", self.log_interval)
-        self.momentum = get("momentum", self.momentum)
-        self.number_of_epochs = get("number_of_epochs", self.number_of_epochs)
-        self.number_of_fold = get("number_of_fold", self.number_of_fold)
-        self.number_of_hidden_layers = get("number_of_hidden_layers", self.number_of_hidden_layers)
-        self.number_of_neurons_in_layers = get("number_of_neurons_in_layers", self.number_of_neurons_in_layers)
-        self.path_to_data = get("path_to_data", self.path_to_data)
-        self.prune_amount = get("prune_amount", self.prune_amount)
-        self.prune_epoch_interval = get("prune_epoch_interval", self.prune_epoch_interval)
-        self.weight_decay = get("weight_decay", self.weight_decay)
-        self.weight_perturbation_amount = get("weight_perturbation_amount", self.weight_perturbation_amount)
-        self.weight_perturbation_epoch_interval = get(
-            "weight_perturbation_epoch_interval", self.weight_perturbation_epoch_interval
-        )
+        for key, value in settings.items():
+            if hasattr(self, key):
+                setattr(self, key, value)
 
         return self
 
@@ -242,31 +178,9 @@ class MfeatPixelSettings:
         }
 
     def json_to_object(self, settings):
-        if isinstance(settings, dict):
-            src = settings
-            get = src.get
-        else:
-            src = settings
-            get = lambda k, default=None: getattr(src, k, default)
-
-        self.batch_size = get("batch_size", self.batch_size)
-        self.categorical_features = get("categorical_features", self.categorical_features)
-        self.dropout_layer = get("dropout_layer", self.dropout_layer)
-        self.learning_rate = get("learning_rate", self.learning_rate)
-        self.log_interval = get("log_interval", self.log_interval)
-        self.momentum = get("momentum", self.momentum)
-        self.number_of_epochs = get("number_of_epochs", self.number_of_epochs)
-        self.number_of_fold = get("number_of_fold", self.number_of_fold)
-        self.number_of_hidden_layers = get("number_of_hidden_layers", self.number_of_hidden_layers)
-        self.number_of_neurons_in_layers = get("number_of_neurons_in_layers", self.number_of_neurons_in_layers)
-        self.path_to_data = get("path_to_data", self.path_to_data)
-        self.prune_amount = get("prune_amount", self.prune_amount)
-        self.prune_epoch_interval = get("prune_epoch_interval", self.prune_epoch_interval)
-        self.weight_decay = get("weight_decay", self.weight_decay)
-        self.weight_perturbation_amount = get("weight_perturbation_amount", self.weight_perturbation_amount)
-        self.weight_perturbation_epoch_interval = get(
-            "weight_perturbation_epoch_interval", self.weight_perturbation_epoch_interval
-        )
+        for key, value in settings.items():
+            if hasattr(self, key):
+                setattr(self, key, value)
 
         return self
 
@@ -309,31 +223,9 @@ class RainInAustraliaSettings:
         }
 
     def json_to_object(self, settings):
-        if isinstance(settings, dict):
-            src = settings
-            get = src.get
-        else:
-            src = settings
-            get = lambda k, default=None: getattr(src, k, default)
-
-        self.batch_size = get("batch_size", self.batch_size)
-        self.categorical_features = get("categorical_features", self.categorical_features)
-        self.dropout_layer = get("dropout_layer", self.dropout_layer)
-        self.learning_rate = get("learning_rate", self.learning_rate)
-        self.log_interval = get("log_interval", self.log_interval)
-        self.momentum = get("momentum", self.momentum)
-        self.number_of_epochs = get("number_of_epochs", self.number_of_epochs)
-        self.number_of_fold = get("number_of_fold", self.number_of_fold)
-        self.number_of_hidden_layers = get("number_of_hidden_layers", self.number_of_hidden_layers)
-        self.number_of_neurons_in_layers = get("number_of_neurons_in_layers", self.number_of_neurons_in_layers)
-        self.path_to_data = get("path_to_data", self.path_to_data)
-        self.prune_amount = get("prune_amount", self.prune_amount)
-        self.prune_epoch_interval = get("prune_epoch_interval", self.prune_epoch_interval)
-        self.weight_decay = get("weight_decay", self.weight_decay)
-        self.weight_perturbation_amount = get("weight_perturbation_amount", self.weight_perturbation_amount)
-        self.weight_perturbation_epoch_interval = get(
-            "weight_perturbation_epoch_interval", self.weight_perturbation_epoch_interval
-        )
+        for key, value in settings.items():
+            if hasattr(self, key):
+                setattr(self, key, value)
 
         return self
 
@@ -377,31 +269,9 @@ class WhiteWineQualitySettings:
         }
 
     def json_to_object(self, settings):
-        if isinstance(settings, dict):
-            src = settings
-            get = src.get
-        else:
-            src = settings
-            get = lambda k, default=None: getattr(src, k, default)
-
-        self.batch_size = get("batch_size", self.batch_size)
-        self.categorical_features = get("categorical_features", self.categorical_features)
-        self.dropout_layer = get("dropout_layer", self.dropout_layer)
-        self.learning_rate = get("learning_rate", self.learning_rate)
-        self.log_interval = get("log_interval", self.log_interval)
-        self.momentum = get("momentum", self.momentum)
-        self.number_of_epochs = get("number_of_epochs", self.number_of_epochs)
-        self.number_of_fold = get("number_of_fold", self.number_of_fold)
-        self.number_of_hidden_layers = get("number_of_hidden_layers", self.number_of_hidden_layers)
-        self.number_of_neurons_in_layers = get("number_of_neurons_in_layers", self.number_of_neurons_in_layers)
-        self.path_to_data = get("path_to_data", self.path_to_data)
-        self.prune_amount = get("prune_amount", self.prune_amount)
-        self.prune_epoch_interval = get("prune_epoch_interval", self.prune_epoch_interval)
-        self.weight_decay = get("weight_decay", self.weight_decay)
-        self.weight_perturbation_amount = get("weight_perturbation_amount", self.weight_perturbation_amount)
-        self.weight_perturbation_epoch_interval = get(
-            "weight_perturbation_epoch_interval", self.weight_perturbation_epoch_interval
-        )
+        for key, value in settings.items():
+            if hasattr(self, key):
+                setattr(self, key, value)
 
         return self
 
@@ -432,18 +302,6 @@ class BallsSettings:
     pool_type = [0, 0, 0]
     number_of_hidden_layers = 2
     number_of_neurons_in_layers = [50, 50]
-    # batch_size = 16
-    # learning_rate = 0.25
-    # momentum = 0.008515960444937878
-    # number_of_epochs = 500
-    # number_of_convolutional_layers = 12
-    # out_channels = [128, 16, 64, 32, 64, 32, 8, 32, 8, 16, 4, 8, 2, 2, 2]
-    # kernel_size = [4, 2, 8, 4, 2, 2, 2, 2, 2, 2, 2, 4, 4, 2, 2]
-    # kernel_stride = [16, 2, 8, 2, 2, 2, 2, 16, 2, 2, 2, 2, 4, 4, 2]
-    # pool_size = [4, 2, 8, 2, 16, 2, 2, 2, 4, 2, 8, 2, 2, 8, 8]
-    # pool_type = [0, 1, 0, 0, 1, 1, 1, 0, 0, 1, 0, 0, 1, 1, 1]
-    # number_of_hidden_layers = 10
-    # number_of_neurons_in_layers = [300, 50, 1250, 150, 950, 450, 650, 200, 50, 1100]
 
     # second
     dropout_layer = [0.36992542, 0.68516421, 0.30403681, 0.4702171, 0.39949961, 0.76684282, 0.005, 0.9, 0.56678831,
@@ -486,40 +344,9 @@ class BallsSettings:
         }
 
     def json_to_object(self, settings):
-        if isinstance(settings, dict):
-            src = settings
-            get = src.get
-        else:
-            src = settings
-            get = lambda k, default=None: getattr(src, k, default)
-
-        self.log_interval = get("log_interval", self.log_interval)
-        self.path_to_data = get("path_to_data", self.path_to_data)
-        self.in_channels = get("in_channels", self.in_channels)
-        self.output_size = get("output_size", self.output_size)
-        self.number_of_fold = get("number_of_fold", self.number_of_fold)
-        self.image_size = get("image_size", self.image_size)
-        self.mean = get("mean", self.mean)
-        self.std = get("std", self.std)
-        self.rotation = get("rotation", self.rotation)
-        self.batch_size = get("batch_size", self.batch_size)
-        self.learning_rate = get("learning_rate", self.learning_rate)
-        self.momentum = get("momentum", self.momentum)
-        self.number_of_epochs = get("number_of_epochs", self.number_of_epochs)
-        self.number_of_convolutional_layers = get("number_of_convolutional_layers", self.number_of_convolutional_layers)
-        self.out_channels = get("out_channels", self.out_channels)
-        self.kernel_size = get("kernel_size", self.kernel_size)
-        self.kernel_stride = get("kernel_stride", self.kernel_stride)
-        self.pool_size = get("pool_size", self.pool_size)
-        self.pool_type = get("pool_type", self.pool_type)
-        self.number_of_hidden_layers = get("number_of_hidden_layers", self.number_of_hidden_layers)
-        self.number_of_neurons_in_layers = get("number_of_neurons_in_layers", self.number_of_neurons_in_layers)
-        self.dropout_layer = get("dropout_layer", self.dropout_layer)
-        self.weight_decay = get("weight_decay", self.weight_decay)
-        self.prune_amount = get("prune_amount", self.prune_amount)
-        self.prune_epoch_interval = get("prune_epoch_interval", self.prune_epoch_interval)
-        self.weight_perturbation_amount = get("weight_perturbation_amount", self.weight_perturbation_amount)
-        self.weight_perturbation_epoch_interval = get("weight_perturbation_epoch_interval", self.weight_perturbation_epoch_interval)
+        for key, value in settings.items():
+            if hasattr(self, key):
+                setattr(self, key, value)
 
         return self
 
@@ -590,41 +417,9 @@ class BeanLeafSettings:
         }
 
     def json_to_object(self, settings):
-        if isinstance(settings, dict):
-            src = settings
-            get = src.get
-        else:
-            src = settings
-            get = lambda k, default=None: getattr(src, k, default)
-
-        self.log_interval = get("log_interval", self.log_interval)
-        self.path_to_data = get("path_to_data", self.path_to_data)
-        self.in_channels = get("in_channels", self.in_channels)
-        self.output_size = get("output_size", self.output_size)
-        self.number_of_fold = get("number_of_fold", self.number_of_fold)
-        self.image_size = get("image_size", self.image_size)
-        self.mean = get("mean", self.mean)
-        self.std = get("std", self.std)
-        self.rotation = get("rotation", self.rotation)
-        self.batch_size = get("batch_size", self.batch_size)
-        self.learning_rate = get("learning_rate", self.learning_rate)
-        self.momentum = get("momentum", self.momentum)
-        self.number_of_epochs = get("number_of_epochs", self.number_of_epochs)
-        self.number_of_convolutional_layers = get("number_of_convolutional_layers", self.number_of_convolutional_layers)
-        self.out_channels = get("out_channels", self.out_channels)
-        self.kernel_size = get("kernel_size", self.kernel_size)
-        self.kernel_stride = get("kernel_stride", self.kernel_stride)
-        self.pool_size = get("pool_size", self.pool_size)
-        self.pool_type = get("pool_type", self.pool_type)
-        self.number_of_hidden_layers = get("number_of_hidden_layers", self.number_of_hidden_layers)
-        self.number_of_neurons_in_layers = get("number_of_neurons_in_layers", self.number_of_neurons_in_layers)
-        self.dropout_layer = get("dropout_layer", self.dropout_layer)
-        self.weight_decay = get("weight_decay", self.weight_decay)
-        self.prune_amount = get("prune_amount", self.prune_amount)
-        self.prune_epoch_interval = get("prune_epoch_interval", self.prune_epoch_interval)
-        self.weight_perturbation_amount = get("weight_perturbation_amount", self.weight_perturbation_amount)
-        self.weight_perturbation_epoch_interval = get("weight_perturbation_epoch_interval",
-                                                      self.weight_perturbation_epoch_interval)
+        for key, value in settings.items():
+            if hasattr(self, key):
+                setattr(self, key, value)
 
         return self
 
@@ -694,41 +489,9 @@ class CifarSettings:
         }
 
     def json_to_object(self, settings):
-        if isinstance(settings, dict):
-            src = settings
-            get = src.get
-        else:
-            src = settings
-            get = lambda k, default=None: getattr(src, k, default)
-
-        self.log_interval = get("log_interval", self.log_interval)
-        self.path_to_data = get("path_to_data", self.path_to_data)
-        self.in_channels = get("in_channels", self.in_channels)
-        self.output_size = get("output_size", self.output_size)
-        self.number_of_fold = get("number_of_fold", self.number_of_fold)
-        self.image_size = get("image_size", self.image_size)
-        self.mean = get("mean", self.mean)
-        self.std = get("std", self.std)
-        self.rotation = get("rotation", self.rotation)
-        self.batch_size = get("batch_size", self.batch_size)
-        self.learning_rate = get("learning_rate", self.learning_rate)
-        self.momentum = get("momentum", self.momentum)
-        self.number_of_epochs = get("number_of_epochs", self.number_of_epochs)
-        self.number_of_convolutional_layers = get("number_of_convolutional_layers", self.number_of_convolutional_layers)
-        self.out_channels = get("out_channels", self.out_channels)
-        self.kernel_size = get("kernel_size", self.kernel_size)
-        self.kernel_stride = get("kernel_stride", self.kernel_stride)
-        self.pool_size = get("pool_size", self.pool_size)
-        self.pool_type = get("pool_type", self.pool_type)
-        self.number_of_hidden_layers = get("number_of_hidden_layers", self.number_of_hidden_layers)
-        self.number_of_neurons_in_layers = get("number_of_neurons_in_layers", self.number_of_neurons_in_layers)
-        self.dropout_layer = get("dropout_layer", self.dropout_layer)
-        self.weight_decay = get("weight_decay", self.weight_decay)
-        self.prune_amount = get("prune_amount", self.prune_amount)
-        self.prune_epoch_interval = get("prune_epoch_interval", self.prune_epoch_interval)
-        self.weight_perturbation_amount = get("weight_perturbation_amount", self.weight_perturbation_amount)
-        self.weight_perturbation_epoch_interval = get("weight_perturbation_epoch_interval",
-                                                      self.weight_perturbation_epoch_interval)
+        for key, value in settings.items():
+            if hasattr(self, key):
+                setattr(self, key, value)
 
         return self
 
@@ -799,41 +562,9 @@ class FashionMNISTSettings:
         }
 
     def json_to_object(self, settings):
-        if isinstance(settings, dict):
-            src = settings
-            get = src.get
-        else:
-            src = settings
-            get = lambda k, default=None: getattr(src, k, default)
-
-        self.log_interval = get("log_interval", self.log_interval)
-        self.path_to_data = get("path_to_data", self.path_to_data)
-        self.in_channels = get("in_channels", self.in_channels)
-        self.output_size = get("output_size", self.output_size)
-        self.number_of_fold = get("number_of_fold", self.number_of_fold)
-        self.image_size = get("image_size", self.image_size)
-        self.mean = get("mean", self.mean)
-        self.std = get("std", self.std)
-        self.rotation = get("rotation", self.rotation)
-        self.batch_size = get("batch_size", self.batch_size)
-        self.learning_rate = get("learning_rate", self.learning_rate)
-        self.momentum = get("momentum", self.momentum)
-        self.number_of_epochs = get("number_of_epochs", self.number_of_epochs)
-        self.number_of_convolutional_layers = get("number_of_convolutional_layers", self.number_of_convolutional_layers)
-        self.out_channels = get("out_channels", self.out_channels)
-        self.kernel_size = get("kernel_size", self.kernel_size)
-        self.kernel_stride = get("kernel_stride", self.kernel_stride)
-        self.pool_size = get("pool_size", self.pool_size)
-        self.pool_type = get("pool_type", self.pool_type)
-        self.number_of_hidden_layers = get("number_of_hidden_layers", self.number_of_hidden_layers)
-        self.number_of_neurons_in_layers = get("number_of_neurons_in_layers", self.number_of_neurons_in_layers)
-        self.dropout_layer = get("dropout_layer", self.dropout_layer)
-        self.weight_decay = get("weight_decay", self.weight_decay)
-        self.prune_amount = get("prune_amount", self.prune_amount)
-        self.prune_epoch_interval = get("prune_epoch_interval", self.prune_epoch_interval)
-        self.weight_perturbation_amount = get("weight_perturbation_amount", self.weight_perturbation_amount)
-        self.weight_perturbation_epoch_interval = get("weight_perturbation_epoch_interval",
-                                                      self.weight_perturbation_epoch_interval)
+        for key, value in settings.items():
+            if hasattr(self, key):
+                setattr(self, key, value)
 
         return self
 
@@ -904,41 +635,9 @@ class MNISTSettings:
         }
 
     def json_to_object(self, settings):
-        if isinstance(settings, dict):
-            src = settings
-            get = src.get
-        else:
-            src = settings
-            get = lambda k, default=None: getattr(src, k, default)
-
-        self.log_interval = get("log_interval", self.log_interval)
-        self.path_to_data = get("path_to_data", self.path_to_data)
-        self.in_channels = get("in_channels", self.in_channels)
-        self.output_size = get("output_size", self.output_size)
-        self.number_of_fold = get("number_of_fold", self.number_of_fold)
-        self.image_size = get("image_size", self.image_size)
-        self.mean = get("mean", self.mean)
-        self.std = get("std", self.std)
-        self.rotation = get("rotation", self.rotation)
-        self.batch_size = get("batch_size", self.batch_size)
-        self.learning_rate = get("learning_rate", self.learning_rate)
-        self.momentum = get("momentum", self.momentum)
-        self.number_of_epochs = get("number_of_epochs", self.number_of_epochs)
-        self.number_of_convolutional_layers = get("number_of_convolutional_layers", self.number_of_convolutional_layers)
-        self.out_channels = get("out_channels", self.out_channels)
-        self.kernel_size = get("kernel_size", self.kernel_size)
-        self.kernel_stride = get("kernel_stride", self.kernel_stride)
-        self.pool_size = get("pool_size", self.pool_size)
-        self.pool_type = get("pool_type", self.pool_type)
-        self.number_of_hidden_layers = get("number_of_hidden_layers", self.number_of_hidden_layers)
-        self.number_of_neurons_in_layers = get("number_of_neurons_in_layers", self.number_of_neurons_in_layers)
-        self.dropout_layer = get("dropout_layer", self.dropout_layer)
-        self.weight_decay = get("weight_decay", self.weight_decay)
-        self.prune_amount = get("prune_amount", self.prune_amount)
-        self.prune_epoch_interval = get("prune_epoch_interval", self.prune_epoch_interval)
-        self.weight_perturbation_amount = get("weight_perturbation_amount", self.weight_perturbation_amount)
-        self.weight_perturbation_epoch_interval = get("weight_perturbation_epoch_interval",
-                                                      self.weight_perturbation_epoch_interval)
+        for key, value in settings.items():
+            if hasattr(self, key):
+                setattr(self, key, value)
 
         return self
 
@@ -1008,40 +707,8 @@ class ShoesSettings:
         }
 
     def json_to_object(self, settings):
-        if isinstance(settings, dict):
-            src = settings
-            get = src.get
-        else:
-            src = settings
-            get = lambda k, default=None: getattr(src, k, default)
-
-        self.log_interval = get("log_interval", self.log_interval)
-        self.path_to_data = get("path_to_data", self.path_to_data)
-        self.in_channels = get("in_channels", self.in_channels)
-        self.output_size = get("output_size", self.output_size)
-        self.number_of_fold = get("number_of_fold", self.number_of_fold)
-        self.image_size = get("image_size", self.image_size)
-        self.mean = get("mean", self.mean)
-        self.std = get("std", self.std)
-        self.rotation = get("rotation", self.rotation)
-        self.batch_size = get("batch_size", self.batch_size)
-        self.learning_rate = get("learning_rate", self.learning_rate)
-        self.momentum = get("momentum", self.momentum)
-        self.number_of_epochs = get("number_of_epochs", self.number_of_epochs)
-        self.number_of_convolutional_layers = get("number_of_convolutional_layers", self.number_of_convolutional_layers)
-        self.out_channels = get("out_channels", self.out_channels)
-        self.kernel_size = get("kernel_size", self.kernel_size)
-        self.kernel_stride = get("kernel_stride", self.kernel_stride)
-        self.pool_size = get("pool_size", self.pool_size)
-        self.pool_type = get("pool_type", self.pool_type)
-        self.number_of_hidden_layers = get("number_of_hidden_layers", self.number_of_hidden_layers)
-        self.number_of_neurons_in_layers = get("number_of_neurons_in_layers", self.number_of_neurons_in_layers)
-        self.dropout_layer = get("dropout_layer", self.dropout_layer)
-        self.weight_decay = get("weight_decay", self.weight_decay)
-        self.prune_amount = get("prune_amount", self.prune_amount)
-        self.prune_epoch_interval = get("prune_epoch_interval", self.prune_epoch_interval)
-        self.weight_perturbation_amount = get("weight_perturbation_amount", self.weight_perturbation_amount)
-        self.weight_perturbation_epoch_interval = get("weight_perturbation_epoch_interval",
-                                                      self.weight_perturbation_epoch_interval)
+        for key, value in settings.items():
+            if hasattr(self, key):
+                setattr(self, key, value)
 
         return self
